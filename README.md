@@ -17,8 +17,8 @@ A configurable status line for [Claude Code](https://docs.anthropic.com/en/docs/
 - **Session usage** — 5-hour rate limit bar with reset countdown
 - **Weekly usage** — 7-day rate limit bar with reset date/time
 - **Model name** — current model display
-- **10 bar styles** — classic, block, shade, dot, square, star, pipe, thin, braille, arrow
-- **5 bar sizes** — tiny, small, medium, large, xl
+- **9 bar styles** — classic, shade, dot, square, star, pipe, thin, braille, arrow
+- **5 bar sizes** — tiny (4), small (6), medium (10), large (15), xl (20)
 - **9 color themes** — default, ocean, sunset, mono, neon, frost, ember, candy, matrix
 - Zero external dependencies (Node.js only)
 
@@ -67,7 +67,7 @@ Edit `~/.config/ccstatusline/config.json`:
 | Key         | Values | Default | Description |
 |-------------|--------|---------|-------------|
 | `bar_size`  | `tiny` (4), `small` (6), `medium` (10), `large` (15), `xl` (20) | `large` | Width of the progress bars in character blocks |
-| `bar_style` | `classic`, `block`, `shade`, `dot`, `square`, `star`, `pipe`, `thin`, `braille`, `arrow` | `classic` | Character style for bars |
+| `bar_style` | `classic`, `shade`, `dot`, `square`, `star`, `pipe`, `thin`, `braille`, `arrow` | `classic` | Character style for bars |
 | `theme`     | `default`, `ocean`, `sunset`, `mono`, `neon`, `frost`, `ember`, `candy`, `matrix` | `default` | Color theme |
 
 Config file lookup order:

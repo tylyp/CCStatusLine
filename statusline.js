@@ -28,7 +28,7 @@ const BAR_SIZE_MAP = { tiny: 4, small: 6, medium: 10, large: 15, xl: 20 };
 const BAR_WIDTH = BAR_SIZE_MAP[cfg.bar_size] || 20;
 
 const BAR_STYLES = {
-  classic: ['█', '░'], block: ['█', '▒'], shade: ['▓', '░'],
+  classic: ['█', '░'], shade: ['▓', '░'],
   dot:     ['●', '○'], square: ['■', '□'], star: ['★', '☆'],
   pipe:    ['┃', '┆'], thin:   ['━', '─'], braille: ['⣿', '⡀'],
   arrow:   ['▶', '▷'],
@@ -316,19 +316,15 @@ process.stdin.on('end', async () => {
       }
     }
 
-    // CC update indicator (hidden unless update available)
-    let updates = '';
-    const ccUpdate = getClaudeUpdateIndicator();
-    if (ccUpdate) {
-      updates += `${ccUpdate} `;
-    }
-
     // Fetch usage data
     const usage = await fetchUsageData();
 
-    // Build line: [CC update] dir | context | session | weekly | model
+    // Build line: [CC update |] dir | context | session | weekly | model
     const sep = ` ${c.dim}|${c.reset} `;
     const parts = [];
+
+    const ccUpdate = getClaudeUpdateIndicator();
+    if (ccUpdate) parts.push(ccUpdate);
 
     parts.push(`${c.dim}${path.basename(dir)}${c.reset}`);
     if (ctx) parts.push(ctx);
@@ -341,6 +337,6 @@ process.stdin.on('end', async () => {
 
     parts.push(`${c.dim}${model}${c.reset}`);
 
-    process.stdout.write(updates + parts.join(sep));
+    process.stdout.write(parts.join(sep));
   } catch (e) {}
 });
