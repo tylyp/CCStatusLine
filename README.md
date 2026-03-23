@@ -7,6 +7,7 @@ A configurable status line for [Claude Code](https://docs.anthropic.com/en/docs/
 
 ## Features
 
+- **Claude Code update notification** — hidden when up to date, appears in first position when a new version is available (cached, checks every 6h)
 - Context window usage with configurable progress bar
 - Git branch, file count, and line diff stats
 - Session cost tracking
@@ -131,6 +132,7 @@ The script looks for config in this order:
 - `bash` 4+
 - `jq` (JSON processor)
 - `git` (optional, for git status display)
+- `npm` (optional, for Claude Code update checks)
 
 ## License
 

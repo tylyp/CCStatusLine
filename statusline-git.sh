@@ -132,7 +132,51 @@ BLUE='\033[0;34m'
 YELLOW='\033[0;33m'
 CYAN='\033[0;36m'
 GRAY='\033[0;90m'
+MAGENTA='\033[0;35m'
 NC='\033[0m'
+
+# --- Claude Code Update Check (cached, hidden when up to date) ---
+# Cache file stores "local_ver|latest_ver|timestamp" — refreshes every 6 hours
+CACHE_DIR="${HOME}/.cache/ccstatusline"
+CACHE_FILE="${CACHE_DIR}/update_check"
+CACHE_TTL=21600  # 6 hours in seconds
+update_notice=""
+
+check_cc_update() {
+    mkdir -p "$CACHE_DIR" 2>/dev/null
+
+    local now
+    now=$(date +%s)
+    local cached_time=0 cached_local="" cached_latest=""
+
+    if [ -f "$CACHE_FILE" ]; then
+        cached_local=$(cut -d'|' -f1 "$CACHE_FILE")
+        cached_latest=$(cut -d'|' -f2 "$CACHE_FILE")
+        cached_time=$(cut -d'|' -f3 "$CACHE_FILE")
+    fi
+
+    if [ $((now - cached_time)) -gt "$CACHE_TTL" ]; then
+        # Refresh cache — get versions (timeout quickly to not block statusline)
+        cached_local=$(claude --version 2>/dev/null | grep -oP '[\d.]+' | head -1)
+        cached_latest=$(timeout 3 npm view @anthropic-ai/claude-code version 2>/dev/null)
+
+        if [ -n "$cached_local" ] && [ -n "$cached_latest" ]; then
+            echo "${cached_local}|${cached_latest}|${now}" > "$CACHE_FILE"
+        fi
+    fi
+
+    # Compare versions — only show notice if latest is strictly newer
+    if [ -n "$cached_local" ] && [ -n "$cached_latest" ] && [ "$cached_local" != "$cached_latest" ]; then
+        # Simple version comparison: if they differ and latest sorts higher, update available
+        local higher
+        higher=$(printf '%s\n%s' "$cached_local" "$cached_latest" | sort -V | tail -1)
+        if [ "$higher" = "$cached_latest" ]; then
+            update_notice="${MAGENTA}CC ${cached_local}>${cached_latest}${NC} ${GRAY}|${NC} "
+        fi
+    fi
+}
+
+check_cc_update
 
 # --- Read JSON input from stdin ---
 input=$(cat)
@@ -217,4 +261,4 @@ fi
 context_info="${bar_color}${bar}${NC} ${context_percent}%"
 
 # --- Output the status line ---
-echo -e "${BLUE}${dir_name}${NC} ${GRAY}|${NC} ${CYAN}${model_name}${NC} ${GRAY}|${NC} ${context_info}${git_info:+ ${GRAY}|${NC}}${git_info}${cost_info}"
+echo -e "${update_notice}${BLUE}${dir_name}${NC} ${GRAY}|${NC} ${CYAN}${model_name}${NC} ${GRAY}|${NC} ${context_info}${git_info:+ ${GRAY}|${NC}}${git_info}${cost_info}"
