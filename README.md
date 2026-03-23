@@ -1,25 +1,26 @@
 # CCStatusLine
 
-A configurable status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) that displays project context, model info, context usage, git status, and session cost — right in your terminal.
+A configurable status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) that shows context usage, session and weekly rate limits, update notifications, and model info — right in your terminal.
 
 <p align="center">
   <img src="assets/demo-dark.svg" alt="CCStatusLine dark terminal" /><br/>
   <img src="assets/demo-light.svg" alt="CCStatusLine light terminal" />
 </p>
 
-![Bash](https://img.shields.io/badge/bash-%23121011.svg?style=flat&logo=gnu-bash&logoColor=white)
+![Node.js](https://img.shields.io/badge/node.js-%23339933.svg?style=flat&logo=node.js&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
 ## Features
 
-- **Claude Code update notification** — hidden when up to date, appears in first position when a new version is available (cached, checks every 6h)
-- Context window usage with configurable progress bar
-- Git branch, file count, and line diff stats
-- Session cost tracking
+- **Claude Code update notification** — hidden when up to date, appears when a new version is available
+- **Context window** — usage bar with percentage
+- **Session usage** — 5-hour rate limit bar with reset countdown
+- **Weekly usage** — 7-day rate limit bar with reset date/time
+- **Model name** — current model display
 - **10 bar styles** — classic, block, shade, dot, square, star, pipe, thin, braille, arrow
 - **5 bar sizes** — tiny, small, medium, large, xl
 - **9 color themes** — default, ocean, sunset, mono, neon, frost, ember, candy, matrix
-- Zero dependencies (just bash + jq)
+- Zero external dependencies (Node.js only)
 
 ## Installation
 
@@ -59,19 +60,15 @@ Edit `~/.config/ccstatusline/config.json`:
 {
   "bar_size": "large",
   "bar_style": "classic",
-  "theme": "default",
-  "show_cost": true,
-  "show_git": true
+  "theme": "default"
 }
 ```
 
 | Key         | Values | Default | Description |
 |-------------|--------|---------|-------------|
-| `bar_size`  | `tiny`, `small`, `medium`, `large`, `xl` | `large` | Width of the progress bar |
-| `bar_style` | `classic`, `block`, `shade`, `dot`, `square`, `star`, `pipe`, `thin`, `braille`, `arrow` | `classic` | Character style for the bar |
+| `bar_size`  | `tiny`, `small`, `medium`, `large`, `xl` | `large` | Width of the progress bars |
+| `bar_style` | `classic`, `block`, `shade`, `dot`, `square`, `star`, `pipe`, `thin`, `braille`, `arrow` | `classic` | Character style for bars |
 | `theme`     | `default`, `ocean`, `sunset`, `mono`, `neon`, `frost`, `ember`, `candy`, `matrix` | `default` | Color theme |
-| `show_cost` | `true`, `false` | `true` | Show session cost |
-| `show_git`  | `true`, `false` | `true` | Show git branch and stats |
 
 Config file lookup order:
 1. `$CCSTATUSLINE_CONFIG` environment variable
@@ -80,10 +77,8 @@ Config file lookup order:
 
 ## Requirements
 
-- `bash` 4+
-- `jq` (JSON processor)
-- `git` (optional, for git status display)
-- `npm` (optional, for Claude Code update checks)
+- Node.js 16+
+- Claude Code CLI (for update checks)
 
 ## License
 

@@ -170,12 +170,24 @@ def generate_themes_svg():
     return "\n".join(lines)
 
 
+def _build_bar(x, y, filled, empty, fill_color, empty_color, cw):
+    """Return SVG text elements for a progress bar."""
+    els = []
+    f_str = "█" * filled
+    e_str = "░" * empty
+    els.append(f'  <text x="{x}" y="{y}" fill="{fill_color}">{f_str}</text>')
+    x += filled * cw
+    els.append(f'  <text x="{x}" y="{y}" fill="{empty_color}">{e_str}</text>')
+    x += empty * cw
+    return els, x
+
+
 def _build_demo_lines(bg, text_color, dim_color, bar_empty_color):
     """Build demo SVG content for a given color scheme.
-    Order: CC update | dir | context bar | git | model"""
-    width = 660
+    Order: [CC update] dir | context | session | weekly | model"""
+    width = 950
     height = 86
-    cw = 8.4
+    cw = 7.8  # tighter for more elements
 
     lines = [f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}">
   <style>
@@ -183,75 +195,68 @@ def _build_demo_lines(bg, text_color, dim_color, bar_empty_color):
   </style>
   <rect width="{width}" height="{height}" fill="{bg}" rx="8" />''']
 
-    # Line 1: no update — dir | context | git | model
+    sep = (dim_color, " | ")
+
+    def add(color, text, yy):
+        nonlocal x
+        display = text.replace("&gt;", ">").replace("&lt;", "<")
+        lines.append(f'  <text x="{x:.1f}" y="{yy}" fill="{color}">{text}</text>')
+        x += len(display) * cw
+
+    # ── Line 1: dir | context 32% | session 18% ⟳ 14:30 | weekly 42% ⟳ mar 27, 00:00 | model ──
     y = 28
     x = PAD_X
 
-    parts1 = [
-        ("#3b82f6", "my-project"),
-        (dim_color, " | "),
-    ]
-    for color, text in parts1:
-        lines.append(f'  <text x="{x}" y="{y}" fill="{color}">{text}</text>')
-        x += len(text) * cw
+    add(dim_color, "CCStatusLine", y)
+    add(*sep, y)
+    # Context bar 32% green
+    bar_els, x = _build_bar(x, y, 5, 10, "#22c55e", bar_empty_color, cw)
+    lines.extend(bar_els)
+    add(text_color, " 32%", y)
+    add(*sep, y)
+    # Session: s [bar] 18% ⟳ 14:30
+    add(dim_color, "s ", y)
+    bar_els, x = _build_bar(x, y, 3, 12, "#22c55e", bar_empty_color, cw)
+    lines.extend(bar_els)
+    add(text_color, " 18%", y)
+    add(dim_color, " \u27f3 14:30", y)
+    add(*sep, y)
+    # Weekly: w [bar] 42% ⟳ mar 27, 00:00
+    add(dim_color, "w ", y)
+    bar_els, x = _build_bar(x, y, 6, 9, "#22c55e", bar_empty_color, cw)
+    lines.extend(bar_els)
+    add(text_color, " 42%", y)
+    add(dim_color, " \u27f3 mar 27, 00:00", y)
+    add(*sep, y)
+    add(dim_color, "Opus 4.6", y)
 
-    # Bar 42% green
-    f_chars = "██████"
-    e_chars = "░░░░░░░░░"
-    lines.append(f'  <text x="{x}" y="{y}" fill="#22c55e">{f_chars}</text>')
-    x += len(f_chars) * cw
-    lines.append(f'  <text x="{x}" y="{y}" fill="{bar_empty_color}">{e_chars}</text>')
-    x += len(e_chars) * cw
-
-    parts1b = [
-        (text_color, " 42%"),
-        (dim_color, " | "),
-        ("#eab308", "(main"),
-        (dim_color, " | "),
-        (dim_color, "3 files "),
-        ("#22c55e", "+48 "),
-        ("#ef4444", "-12"),
-        ("#eab308", ")"),
-        (dim_color, " | "),
-        ("#06b6d4", "Opus 4.6"),
-    ]
-    for color, text in parts1b:
-        lines.append(f'  <text x="{x}" y="{y}" fill="{color}">{text}</text>')
-        x += len(text) * cw
-
-    # Line 2: with update — CC update | dir | context | git | model
+    # ── Line 2: CC update | dir | context 78% | session 85% | weekly 71% | model ──
     y2 = 56
     x = PAD_X
 
-    parts2 = [
-        ("#a855f7", "CC 2.1.80&gt;2.1.81"),
-        (dim_color, " | "),
-        ("#3b82f6", "api-server"),
-        (dim_color, " | "),
-    ]
-    for color, text in parts2:
-        lines.append(f'  <text x="{x}" y="{y2}" fill="{color}">{text}</text>')
-        display_len = len(text.replace("&gt;", ">"))
-        x += display_len * cw
-
-    # Bar 78% yellow
-    f2 = "████████"
-    e2 = "░░░"
-    lines.append(f'  <text x="{x}" y="{y2}" fill="#eab308">{f2}</text>')
-    x += len(f2) * cw
-    lines.append(f'  <text x="{x}" y="{y2}" fill="{bar_empty_color}">{e2}</text>')
-    x += len(e2) * cw
-
-    parts2b = [
-        (text_color, " 78%"),
-        (dim_color, " | "),
-        ("#eab308", "(feat-auth)"),
-        (dim_color, " | "),
-        ("#06b6d4", "Sonnet 4.6"),
-    ]
-    for color, text in parts2b:
-        lines.append(f'  <text x="{x}" y="{y2}" fill="{color}">{text}</text>')
-        x += len(text) * cw
+    add("#a04000", "\u2b06 CC 2.1.81", y2)
+    add(dim_color, " ", y2)
+    add(dim_color, "CCStatusLine", y2)
+    add(*sep, y2)
+    # Context 78% yellow
+    bar_els, x = _build_bar(x, y2, 12, 3, "#eab308", bar_empty_color, cw)
+    lines.extend(bar_els)
+    add(text_color, " 78%", y2)
+    add(*sep, y2)
+    # Session 85% red
+    add(dim_color, "s ", y2)
+    bar_els, x = _build_bar(x, y2, 13, 2, "#ef4444", bar_empty_color, cw)
+    lines.extend(bar_els)
+    add(text_color, " 85%", y2)
+    add(dim_color, " \u27f3 16:45", y2)
+    add(*sep, y2)
+    # Weekly 71%
+    add(dim_color, "w ", y2)
+    bar_els, x = _build_bar(x, y2, 11, 4, "#eab308", bar_empty_color, cw)
+    lines.extend(bar_els)
+    add(text_color, " 71%", y2)
+    add(*sep, y2)
+    add(dim_color, "Sonnet 4.6", y2)
 
     lines.append(svg_footer())
     return "\n".join(lines)

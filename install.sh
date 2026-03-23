@@ -13,13 +13,13 @@ echo "Installing CCStatusLine..."
 mkdir -p "$INSTALL_DIR"
 
 # Download files
-curl -fsSL "$REPO/statusline-git.sh" -o "$INSTALL_DIR/statusline-git.sh"
+curl -fsSL "$REPO/statusline.js" -o "$INSTALL_DIR/statusline.js"
 curl -fsSL "$REPO/config.json" -o "$INSTALL_DIR/config.json"
-chmod +x "$INSTALL_DIR/statusline-git.sh"
+chmod +x "$INSTALL_DIR/statusline.js"
 
 # Configure Claude Code settings
 mkdir -p "$HOME/.claude"
-COMMAND="bash $INSTALL_DIR/statusline-git.sh"
+COMMAND="node $INSTALL_DIR/statusline.js"
 
 if [ -f "$SETTINGS_FILE" ]; then
     # Merge statusLine into existing settings

@@ -1,8 +1,5 @@
 {
   "bar_size": "large",
   "bar_style": "classic",
-  "theme": "default",
-  "clock_format": "24h",
-  "show_cost": true,
-  "show_git": true
+  "theme": "default"
 }

@@ -12,12 +12,12 @@ Write-Host "Installing CCStatusLine..."
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 
 # Download files
-Invoke-WebRequest -Uri "$Repo/statusline-git.sh" -OutFile "$InstallDir\statusline-git.sh"
+Invoke-WebRequest -Uri "$Repo/statusline.js" -OutFile "$InstallDir\statusline.js"
 Invoke-WebRequest -Uri "$Repo/config.json" -OutFile "$InstallDir\config.json"
 
 # Configure Claude Code settings
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude" | Out-Null
-$Command = "bash $InstallDir/statusline-git.sh"
+$Command = "node $InstallDir/statusline.js"
 
 if (Test-Path $SettingsFile) {
     $settings = Get-Content $SettingsFile -Raw | ConvertFrom-Json

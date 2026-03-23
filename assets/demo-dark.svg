@@ -1,31 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 86" width="660" height="86">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 86" width="950" height="86">
   <style>
     text { font-family: JetBrains Mono, Cascadia Code, Consolas, monospace; font-size: 13px; }
   </style>
-  <rect width="660" height="86" fill="#1e1e2e" rx="8" />
-  <text x="20" y="28" fill="#3b82f6">my-project</text>
-  <text x="104.0" y="28" fill="#6c7086"> | </text>
-  <text x="129.2" y="28" fill="#22c55e">██████</text>
-  <text x="179.6" y="28" fill="#45475a">░░░░░░░░░</text>
-  <text x="255.2" y="28" fill="#cdd6f4"> 42%</text>
-  <text x="288.8" y="28" fill="#6c7086"> | </text>
-  <text x="314.0" y="28" fill="#eab308">(main</text>
-  <text x="356.0" y="28" fill="#6c7086"> | </text>
-  <text x="381.2" y="28" fill="#6c7086">3 files </text>
-  <text x="448.4" y="28" fill="#22c55e">+48 </text>
-  <text x="482.0" y="28" fill="#ef4444">-12</text>
-  <text x="507.2" y="28" fill="#eab308">)</text>
-  <text x="515.6" y="28" fill="#6c7086"> | </text>
-  <text x="540.8000000000001" y="28" fill="#06b6d4">Opus 4.6</text>
-  <text x="20" y="56" fill="#a855f7">CC 2.1.80&gt;2.1.81</text>
-  <text x="154.4" y="56" fill="#6c7086"> | </text>
-  <text x="179.60000000000002" y="56" fill="#3b82f6">api-server</text>
-  <text x="263.6" y="56" fill="#6c7086"> | </text>
-  <text x="288.8" y="56" fill="#eab308">████████</text>
-  <text x="356.0" y="56" fill="#45475a">░░░</text>
-  <text x="381.2" y="56" fill="#cdd6f4"> 78%</text>
-  <text x="414.8" y="56" fill="#6c7086"> | </text>
-  <text x="440.0" y="56" fill="#eab308">(feat-auth)</text>
-  <text x="532.4" y="56" fill="#6c7086"> | </text>
-  <text x="557.6" y="56" fill="#06b6d4">Sonnet 4.6</text>
+  <rect width="950" height="86" fill="#1e1e2e" rx="8" />
+  <text x="20.0" y="28" fill="#6c7086">CCStatusLine</text>
+  <text x="113.6" y="28" fill="#6c7086"> | </text>
+  <text x="137.0" y="28" fill="#22c55e">█████</text>
+  <text x="176.0" y="28" fill="#45475a">░░░░░░░░░░</text>
+  <text x="254.0" y="28" fill="#cdd6f4"> 32%</text>
+  <text x="285.2" y="28" fill="#6c7086"> | </text>
+  <text x="308.6" y="28" fill="#6c7086">s </text>
+  <text x="324.2" y="28" fill="#22c55e">███</text>
+  <text x="347.59999999999997" y="28" fill="#45475a">░░░░░░░░░░░░</text>
+  <text x="441.2" y="28" fill="#cdd6f4"> 18%</text>
+  <text x="472.4" y="28" fill="#6c7086"> ⟳ 14:30</text>
+  <text x="534.8" y="28" fill="#6c7086"> | </text>
+  <text x="558.2" y="28" fill="#6c7086">w </text>
+  <text x="573.8" y="28" fill="#22c55e">██████</text>
+  <text x="620.5999999999999" y="28" fill="#45475a">░░░░░░░░░</text>
+  <text x="690.8" y="28" fill="#cdd6f4"> 42%</text>
+  <text x="722.0" y="28" fill="#6c7086"> ⟳ mar 27, 00:00</text>
+  <text x="846.8" y="28" fill="#6c7086"> | </text>
+  <text x="870.2" y="28" fill="#6c7086">Opus 4.6</text>
+  <text x="20.0" y="56" fill="#a04000">⬆ CC 2.1.81</text>
+  <text x="105.8" y="56" fill="#6c7086"> </text>
+  <text x="113.6" y="56" fill="#6c7086">CCStatusLine</text>
+  <text x="207.2" y="56" fill="#6c7086"> | </text>
+  <text x="230.6" y="56" fill="#eab308">████████████</text>
+  <text x="324.2" y="56" fill="#45475a">░░░</text>
+  <text x="347.6" y="56" fill="#cdd6f4"> 78%</text>
+  <text x="378.8" y="56" fill="#6c7086"> | </text>
+  <text x="402.2" y="56" fill="#6c7086">s </text>
+  <text x="417.79999999999995" y="56" fill="#ef4444">█████████████</text>
+  <text x="519.1999999999999" y="56" fill="#45475a">░░</text>
+  <text x="534.8" y="56" fill="#cdd6f4"> 85%</text>
+  <text x="566.0" y="56" fill="#6c7086"> ⟳ 16:45</text>
+  <text x="628.4" y="56" fill="#6c7086"> | </text>
+  <text x="651.8" y="56" fill="#6c7086">w </text>
+  <text x="667.4" y="56" fill="#eab308">███████████</text>
+  <text x="753.1999999999999" y="56" fill="#45475a">░░░░</text>
+  <text x="784.4" y="56" fill="#cdd6f4"> 71%</text>
+  <text x="815.6" y="56" fill="#6c7086"> | </text>
+  <text x="839.0" y="56" fill="#6c7086">Sonnet 4.6</text>
 </svg>
