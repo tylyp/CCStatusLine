@@ -62,39 +62,19 @@ All themes use threshold-based coloring:
 
 ## Installation
 
-### Quick Install
+### macOS / Linux
 
 ```bash
-# Clone the repo
-git clone https://github.com/tylyp/CCStatusLine.git
-
-# Copy the script somewhere convenient
-cp CCStatusLine/statusline-git.sh ~/.config/ccstatusline/statusline-git.sh
-cp CCStatusLine/config.json ~/.config/ccstatusline/config.json
-chmod +x ~/.config/ccstatusline/statusline-git.sh
+curl -fsSL https://raw.githubusercontent.com/tylyp/CCStatusLine/main/install.sh | bash
 ```
 
-### Configure Claude Code
+### Windows (PowerShell)
 
-Add to your Claude Code settings (`~/.claude/settings.json`):
-
-```json
-{
-  "statusLine": {
-    "command": "bash /path/to/statusline-git.sh"
-  }
-}
+```powershell
+irm https://raw.githubusercontent.com/tylyp/CCStatusLine/main/install.ps1 | iex
 ```
 
-Or with environment-based config path:
-
-```json
-{
-  "statusLine": {
-    "command": "CCSTATUSLINE_CONFIG=/path/to/config.json bash /path/to/statusline-git.sh"
-  }
-}
-```
+Restart Claude Code and you're done. That's it.
 
 ## Configuration
 
