@@ -3,7 +3,8 @@
 A configurable status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) that displays project context, model info, context usage, git status, and session cost — right in your terminal.
 
 <p align="center">
-  <img src="assets/demo.svg" alt="CCStatusLine demo" />
+  <img src="assets/demo-dark.svg" alt="CCStatusLine dark terminal" /><br/>
+  <img src="assets/demo-light.svg" alt="CCStatusLine light terminal" />
 </p>
 
 ![Bash](https://img.shields.io/badge/bash-%23121011.svg?style=flat&logo=gnu-bash&logoColor=white)

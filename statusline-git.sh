@@ -261,4 +261,5 @@ fi
 context_info="${bar_color}${bar}${NC} ${context_percent}%"
 
 # --- Output the status line ---
-echo -e "${update_notice}${BLUE}${dir_name}${NC} ${GRAY}|${NC} ${CYAN}${model_name}${NC} ${GRAY}|${NC} ${context_info}${git_info:+ ${GRAY}|${NC}}${git_info}${cost_info}"
+# Order: CC update | dir | context | session cost | git | model
+echo -e "${update_notice}${BLUE}${dir_name}${NC} ${GRAY}|${NC} ${context_info}${cost_info:+ ${GRAY}|${NC}}${cost_info}${git_info:+ ${GRAY}|${NC}}${git_info} ${GRAY}|${NC} ${CYAN}${model_name}${NC}"

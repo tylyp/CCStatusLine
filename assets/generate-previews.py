@@ -170,28 +170,28 @@ def generate_themes_svg():
     return "\n".join(lines)
 
 
-def generate_demo_svg():
-    """Generate a hero image showing two realistic status lines."""
-    width = 720
+def _build_demo_lines(bg, text_color, dim_color, bar_empty_color, label_color):
+    """Build demo SVG content for a given color scheme.
+    Order: CC update | dir | context bar | session cost | git | model"""
+    width = 750
     height = 86
-    cw = 8.4  # tighter char width for demo
+    cw = 8.4
 
     lines = [f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}">
   <style>
     text {{ font-family: {FONT}; font-size: 13px; }}
   </style>
-  <rect width="{width}" height="{height}" fill="{BG_COLOR}" rx="8" />''']
+  <rect width="{width}" height="{height}" fill="{bg}" rx="8" />''']
 
-    # Line 1: normal status (no update)
+    # Line 1: no update — dir | context | cost | git | model
     y = 28
     x = PAD_X
-    parts = [
-        ("#89b4fa", "my-project"),
-        (DIM_COLOR, " | "),
-        ("#06b6d4", "Opus 4.6"),
-        (DIM_COLOR, " | "),
+
+    parts1 = [
+        ("#3b82f6", "my-project"),
+        (dim_color, " | "),
     ]
-    for color, text in parts:
+    for color, text in parts1:
         lines.append(f'  <text x="{x}" y="{y}" fill="{color}">{text}</text>')
         x += len(text) * cw
 
@@ -200,36 +200,38 @@ def generate_demo_svg():
     e_chars = "░░░░░░░░░"
     lines.append(f'  <text x="{x}" y="{y}" fill="#22c55e">{f_chars}</text>')
     x += len(f_chars) * cw
-    lines.append(f'  <text x="{x}" y="{y}" fill="#45475a">{e_chars}</text>')
+    lines.append(f'  <text x="{x}" y="{y}" fill="{bar_empty_color}">{e_chars}</text>')
     x += len(e_chars) * cw
 
-    parts2 = [
-        (TEXT_COLOR, " 42%"),
-        (DIM_COLOR, " | "),
+    parts1b = [
+        (text_color, " 42%"),
+        (dim_color, " | "),
+        (dim_color, "[$0.1204]"),
+        (dim_color, " | "),
         ("#eab308", "(main"),
-        (DIM_COLOR, " | "),
-        (DIM_COLOR, "3 files "),
+        (dim_color, " | "),
+        (dim_color, "3 files "),
         ("#22c55e", "+48 "),
         ("#ef4444", "-12"),
         ("#eab308", ")"),
+        (dim_color, " | "),
+        ("#06b6d4", "Opus 4.6"),
     ]
-    for color, text in parts2:
+    for color, text in parts1b:
         lines.append(f'  <text x="{x}" y="{y}" fill="{color}">{text}</text>')
         x += len(text) * cw
 
-    # Line 2: with update notice
+    # Line 2: with update — CC update | dir | context | cost | model
     y2 = 56
     x = PAD_X
-    parts3 = [
+
+    parts2 = [
         ("#a855f7", "CC 2.1.80&gt;2.1.81"),
-        (DIM_COLOR, " | "),
-        ("#89b4fa", "api-server"),
-        (DIM_COLOR, " | "),
-        ("#06b6d4", "Sonnet 4.6"),
-        (DIM_COLOR, " | "),
+        (dim_color, " | "),
+        ("#3b82f6", "api-server"),
+        (dim_color, " | "),
     ]
-    # Manually track length for the HTML entity
-    for color, text in parts3:
+    for color, text in parts2:
         lines.append(f'  <text x="{x}" y="{y2}" fill="{color}">{text}</text>')
         display_len = len(text.replace("&gt;", ">"))
         x += display_len * cw
@@ -239,31 +241,61 @@ def generate_demo_svg():
     e2 = "░░░░"
     lines.append(f'  <text x="{x}" y="{y2}" fill="#eab308">{f2}</text>')
     x += len(f2) * cw
-    lines.append(f'  <text x="{x}" y="{y2}" fill="#45475a">{e2}</text>')
+    lines.append(f'  <text x="{x}" y="{y2}" fill="{bar_empty_color}">{e2}</text>')
     x += len(e2) * cw
 
-    parts4 = [
-        (TEXT_COLOR, " 78%"),
-        (DIM_COLOR, " [$0.4821]"),
+    parts2b = [
+        (text_color, " 78%"),
+        (dim_color, " | "),
+        (dim_color, "[$0.4821]"),
+        (dim_color, " | "),
+        ("#eab308", "(feat-auth)"),
+        (dim_color, " | "),
+        ("#06b6d4", "Sonnet 4.6"),
     ]
-    for color, text in parts4:
+    for color, text in parts2b:
         lines.append(f'  <text x="{x}" y="{y2}" fill="{color}">{text}</text>')
         x += len(text) * cw
 
     # Subtle labels
-    lines.append(f'  <text x="{width - 100}" y="{y + 1}" fill="#45475a" font-size="10">up to date</text>')
-    lines.append(f'  <text x="{width - 110}" y="{y2 + 1}" fill="#45475a" font-size="10">update available</text>')
+    lines.append(f'  <text x="{width - 100}" y="{y + 1}" fill="{label_color}" font-size="10">up to date</text>')
+    lines.append(f'  <text x="{width - 110}" y="{y2 + 1}" fill="{label_color}" font-size="10">update available</text>')
 
     lines.append(svg_footer())
     return "\n".join(lines)
+
+
+def generate_demo_dark_svg():
+    """Dark terminal demo."""
+    return _build_demo_lines(
+        bg="#1e1e2e",
+        text_color="#cdd6f4",
+        dim_color="#6c7086",
+        bar_empty_color="#45475a",
+        label_color="#45475a",
+    )
+
+
+def generate_demo_light_svg():
+    """Light terminal demo."""
+    return _build_demo_lines(
+        bg="#f5f5f5",
+        text_color="#1e1e2e",
+        dim_color="#6b7280",
+        bar_empty_color="#d1d5db",
+        label_color="#9ca3af",
+    )
 
 
 if __name__ == "__main__":
     import os
     out_dir = os.path.join(os.path.dirname(__file__))
 
-    with open(os.path.join(out_dir, "demo.svg"), "w", encoding="utf-8") as f:
-        f.write(generate_demo_svg())
+    with open(os.path.join(out_dir, "demo-dark.svg"), "w", encoding="utf-8") as f:
+        f.write(generate_demo_dark_svg())
+
+    with open(os.path.join(out_dir, "demo-light.svg"), "w", encoding="utf-8") as f:
+        f.write(generate_demo_light_svg())
 
     with open(os.path.join(out_dir, "bar-styles.svg"), "w", encoding="utf-8") as f:
         f.write(generate_bar_styles_svg())
@@ -274,4 +306,4 @@ if __name__ == "__main__":
     with open(os.path.join(out_dir, "themes.svg"), "w", encoding="utf-8") as f:
         f.write(generate_themes_svg())
 
-    print("Generated: demo.svg, bar-styles.svg, bar-sizes.svg, themes.svg")
+    print("Generated: demo-dark.svg, demo-light.svg, bar-styles.svg, bar-sizes.svg, themes.svg")
