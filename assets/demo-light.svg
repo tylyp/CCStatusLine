@@ -1,37 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 86" width="750" height="86">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 86" width="660" height="86">
   <style>
     text { font-family: JetBrains Mono, Cascadia Code, Consolas, monospace; font-size: 13px; }
   </style>
-  <rect width="750" height="86" fill="#f5f5f5" rx="8" />
+  <rect width="660" height="86" fill="#f5f5f5" rx="8" />
   <text x="20" y="28" fill="#3b82f6">my-project</text>
   <text x="104.0" y="28" fill="#6b7280"> | </text>
   <text x="129.2" y="28" fill="#22c55e">██████</text>
   <text x="179.6" y="28" fill="#d1d5db">░░░░░░░░░</text>
   <text x="255.2" y="28" fill="#1e1e2e"> 42%</text>
   <text x="288.8" y="28" fill="#6b7280"> | </text>
-  <text x="314.0" y="28" fill="#6b7280">[$0.1204]</text>
-  <text x="389.6" y="28" fill="#6b7280"> | </text>
-  <text x="414.8" y="28" fill="#eab308">(main</text>
-  <text x="456.8" y="28" fill="#6b7280"> | </text>
-  <text x="482.0" y="28" fill="#6b7280">3 files </text>
-  <text x="549.2" y="28" fill="#22c55e">+48 </text>
-  <text x="582.8000000000001" y="28" fill="#ef4444">-12</text>
-  <text x="608.0000000000001" y="28" fill="#eab308">)</text>
-  <text x="616.4000000000001" y="28" fill="#6b7280"> | </text>
-  <text x="641.6000000000001" y="28" fill="#06b6d4">Opus 4.6</text>
+  <text x="314.0" y="28" fill="#eab308">(main</text>
+  <text x="356.0" y="28" fill="#6b7280"> | </text>
+  <text x="381.2" y="28" fill="#6b7280">3 files </text>
+  <text x="448.4" y="28" fill="#22c55e">+48 </text>
+  <text x="482.0" y="28" fill="#ef4444">-12</text>
+  <text x="507.2" y="28" fill="#eab308">)</text>
+  <text x="515.6" y="28" fill="#6b7280"> | </text>
+  <text x="540.8000000000001" y="28" fill="#06b6d4">Opus 4.6</text>
   <text x="20" y="56" fill="#a855f7">CC 2.1.80&gt;2.1.81</text>
   <text x="154.4" y="56" fill="#6b7280"> | </text>
   <text x="179.60000000000002" y="56" fill="#3b82f6">api-server</text>
   <text x="263.6" y="56" fill="#6b7280"> | </text>
-  <text x="288.8" y="56" fill="#eab308">███████████</text>
-  <text x="381.20000000000005" y="56" fill="#d1d5db">░░░░</text>
-  <text x="414.80000000000007" y="56" fill="#1e1e2e"> 78%</text>
-  <text x="448.4000000000001" y="56" fill="#6b7280"> | </text>
-  <text x="473.6000000000001" y="56" fill="#6b7280">[$0.4821]</text>
-  <text x="549.2" y="56" fill="#6b7280"> | </text>
-  <text x="574.4000000000001" y="56" fill="#eab308">(feat-auth)</text>
-  <text x="666.8000000000001" y="56" fill="#6b7280"> | </text>
-  <text x="692.0000000000001" y="56" fill="#06b6d4">Sonnet 4.6</text>
-  <text x="650" y="29" fill="#9ca3af" font-size="10">up to date</text>
-  <text x="640" y="57" fill="#9ca3af" font-size="10">update available</text>
+  <text x="288.8" y="56" fill="#eab308">████████</text>
+  <text x="356.0" y="56" fill="#d1d5db">░░░</text>
+  <text x="381.2" y="56" fill="#1e1e2e"> 78%</text>
+  <text x="414.8" y="56" fill="#6b7280"> | </text>
+  <text x="440.0" y="56" fill="#eab308">(feat-auth)</text>
+  <text x="532.4" y="56" fill="#6b7280"> | </text>
+  <text x="557.6" y="56" fill="#06b6d4">Sonnet 4.6</text>
 </svg>

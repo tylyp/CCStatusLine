@@ -170,10 +170,10 @@ def generate_themes_svg():
     return "\n".join(lines)
 
 
-def _build_demo_lines(bg, text_color, dim_color, bar_empty_color, label_color):
+def _build_demo_lines(bg, text_color, dim_color, bar_empty_color):
     """Build demo SVG content for a given color scheme.
-    Order: CC update | dir | context bar | session cost | git | model"""
-    width = 750
+    Order: CC update | dir | context bar | git | model"""
+    width = 660
     height = 86
     cw = 8.4
 
@@ -183,7 +183,7 @@ def _build_demo_lines(bg, text_color, dim_color, bar_empty_color, label_color):
   </style>
   <rect width="{width}" height="{height}" fill="{bg}" rx="8" />''']
 
-    # Line 1: no update — dir | context | cost | git | model
+    # Line 1: no update — dir | context | git | model
     y = 28
     x = PAD_X
 
@@ -206,8 +206,6 @@ def _build_demo_lines(bg, text_color, dim_color, bar_empty_color, label_color):
     parts1b = [
         (text_color, " 42%"),
         (dim_color, " | "),
-        (dim_color, "[$0.1204]"),
-        (dim_color, " | "),
         ("#eab308", "(main"),
         (dim_color, " | "),
         (dim_color, "3 files "),
@@ -221,7 +219,7 @@ def _build_demo_lines(bg, text_color, dim_color, bar_empty_color, label_color):
         lines.append(f'  <text x="{x}" y="{y}" fill="{color}">{text}</text>')
         x += len(text) * cw
 
-    # Line 2: with update — CC update | dir | context | cost | model
+    # Line 2: with update — CC update | dir | context | git | model
     y2 = 56
     x = PAD_X
 
@@ -237,8 +235,8 @@ def _build_demo_lines(bg, text_color, dim_color, bar_empty_color, label_color):
         x += display_len * cw
 
     # Bar 78% yellow
-    f2 = "███████████"
-    e2 = "░░░░"
+    f2 = "████████"
+    e2 = "░░░"
     lines.append(f'  <text x="{x}" y="{y2}" fill="#eab308">{f2}</text>')
     x += len(f2) * cw
     lines.append(f'  <text x="{x}" y="{y2}" fill="{bar_empty_color}">{e2}</text>')
@@ -247,8 +245,6 @@ def _build_demo_lines(bg, text_color, dim_color, bar_empty_color, label_color):
     parts2b = [
         (text_color, " 78%"),
         (dim_color, " | "),
-        (dim_color, "[$0.4821]"),
-        (dim_color, " | "),
         ("#eab308", "(feat-auth)"),
         (dim_color, " | "),
         ("#06b6d4", "Sonnet 4.6"),
@@ -256,10 +252,6 @@ def _build_demo_lines(bg, text_color, dim_color, bar_empty_color, label_color):
     for color, text in parts2b:
         lines.append(f'  <text x="{x}" y="{y2}" fill="{color}">{text}</text>')
         x += len(text) * cw
-
-    # Subtle labels
-    lines.append(f'  <text x="{width - 100}" y="{y + 1}" fill="{label_color}" font-size="10">up to date</text>')
-    lines.append(f'  <text x="{width - 110}" y="{y2 + 1}" fill="{label_color}" font-size="10">update available</text>')
 
     lines.append(svg_footer())
     return "\n".join(lines)
@@ -272,7 +264,6 @@ def generate_demo_dark_svg():
         text_color="#cdd6f4",
         dim_color="#6c7086",
         bar_empty_color="#45475a",
-        label_color="#45475a",
     )
 
 
@@ -283,7 +274,6 @@ def generate_demo_light_svg():
         text_color="#1e1e2e",
         dim_color="#6b7280",
         bar_empty_color="#d1d5db",
-        label_color="#9ca3af",
     )
 
 
