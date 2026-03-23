@@ -66,7 +66,7 @@ Edit `~/.config/ccstatusline/config.json`:
 
 | Key         | Values | Default | Description |
 |-------------|--------|---------|-------------|
-| `bar_size`  | `tiny`, `small`, `medium`, `large`, `xl` | `large` | Width of the progress bars |
+| `bar_size`  | `tiny` (4), `small` (6), `medium` (10), `large` (15), `xl` (20) | `large` | Width of the progress bars in character blocks |
 | `bar_style` | `classic`, `block`, `shade`, `dot`, `square`, `star`, `pipe`, `thin`, `braille`, `arrow` | `classic` | Character style for bars |
 | `theme`     | `default`, `ocean`, `sunset`, `mono`, `neon`, `frost`, `ember`, `candy`, `matrix` | `default` | Color theme |
 

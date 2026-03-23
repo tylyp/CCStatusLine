@@ -115,10 +115,10 @@ def generate_bar_sizes_svg():
         filled = int(bar_width * 0.75)
         empty = bar_width - filled
 
-        label = name.ljust(8)
+        label = f"{name} ({bar_width})".ljust(12)
         lines.append(f'  <text x="{PAD_X}" y="{y}" class="label">{label}</text>')
 
-        bar_x = PAD_X + 8 * CHAR_W + 8
+        bar_x = PAD_X + 12 * CHAR_W + 8
         lines.append(f'  <text x="{bar_x}" y="{y}" fill="#22c55e">{"█" * filled}</text>')
 
         empty_x = bar_x + filled * CHAR_W
