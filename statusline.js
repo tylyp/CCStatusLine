@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // CCStatusLine - Configurable Claude Code status line
 // https://github.com/tylyp/CCStatusLine
-// Shows: [CC update] dir | context | session | weekly | model
+// Shows: [CC update |] dir | context | 5h | 7d | model
 
 const fs = require('fs');
 const path = require('path');
@@ -57,7 +57,6 @@ const c = {
   label:  rgb(...theme.label),
   ember:  '\x1b[38;2;160;70;20m',
   dim:    '\x1b[2m',
-  bold:   '\x1b[1m',
   reset:  '\x1b[0m',
 };
 
@@ -91,17 +90,28 @@ function formatResetTime(isoStr, style) {
   }
 }
 
-// ── OAuth token resolution (reads from local credentials at runtime) ──
+const CACHE_DIR = path.join(os.tmpdir(), 'claude');
+
+function readJsonFile(filePath) {
+  try { return JSON.parse(fs.readFileSync(filePath, 'utf8')); } catch (e) { return null; }
+}
+
+function writeJsonCache(filePath, data) {
+  try {
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
+    fs.writeFileSync(filePath, typeof data === 'string' ? data : JSON.stringify(data));
+  } catch (e) {}
+}
+
+// ── OAuth token resolution ───────────────────────────────
 function getOAuthToken() {
   if (process.env.CLAUDE_CODE_OAUTH_TOKEN) return process.env.CLAUDE_CODE_OAUTH_TOKEN;
   const claudeDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
   const credsFile = path.join(claudeDir, '.credentials.json');
   try {
-    if (fs.existsSync(credsFile)) {
-      const creds = JSON.parse(fs.readFileSync(credsFile, 'utf8'));
-      const token = creds?.claudeAiOauth?.accessToken;
-      if (token && token !== 'null') return token;
-    }
+    const creds = readJsonFile(credsFile);
+    const token = creds?.claudeAiOauth?.accessToken;
+    if (token && token !== 'null') return token;
   } catch (e) {}
   return '';
 }
@@ -127,7 +137,9 @@ function compareVersions(a, b) {
   return 0;
 }
 
-function triggerAsyncUpdateCheck(localVer, cacheDir, cacheFile) {
+const UPDATE_CACHE_FILE = path.join(CACHE_DIR, 'cc-update-check.json');
+
+function triggerAsyncUpdateCheck(localVer) {
   const req = https.get('https://registry.npmjs.org/@anthropic-ai/claude-code/latest', { timeout: 5000 }, res => {
     let body = '';
     res.on('data', chunk => body += chunk);
@@ -136,17 +148,12 @@ function triggerAsyncUpdateCheck(localVer, cacheDir, cacheFile) {
         const data = JSON.parse(body);
         const remoteVer = data.version;
         if (remoteVer) {
-          const updateAvailable = compareVersions(remoteVer, localVer) > 0;
-          const result = {
+          writeJsonCache(UPDATE_CACHE_FILE, {
             timestamp: Date.now(),
-            update_available: updateAvailable,
+            update_available: compareVersions(remoteVer, localVer) > 0,
             local_version: localVer,
             remote_version: remoteVer,
-          };
-          try {
-            fs.mkdirSync(cacheDir, { recursive: true });
-            fs.writeFileSync(cacheFile, JSON.stringify(result));
-          } catch (e) {}
+          });
         }
       } catch (e) {}
     });
@@ -156,54 +163,51 @@ function triggerAsyncUpdateCheck(localVer, cacheDir, cacheFile) {
 }
 
 function getClaudeUpdateIndicator() {
-  const cacheDir = path.join(os.tmpdir(), 'claude');
-  const cacheFile = path.join(cacheDir, 'cc-update-check.json');
   const cacheTTL = 3600;
 
   try {
-    if (fs.existsSync(cacheFile)) {
-      const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
+    const cache = readJsonFile(UPDATE_CACHE_FILE);
+    if (cache) {
+      const localVer = getLocalClaudeVersion();
       const age = (Date.now() - cache.timestamp) / 1000;
 
-      if (age >= cacheTTL) {
-        const localVer = getLocalClaudeVersion();
-        if (localVer) triggerAsyncUpdateCheck(localVer, cacheDir, cacheFile);
+      if (age >= cacheTTL && localVer) {
+        triggerAsyncUpdateCheck(localVer);
       }
 
       if (cache.update_available) {
-        const currentLocal = getLocalClaudeVersion();
-        if (currentLocal && currentLocal === cache.local_version) {
+        if (localVer && localVer === cache.local_version) {
           return `${c.ember}⬆ CC ${cache.remote_version}${c.reset}`;
         }
-        if (currentLocal) triggerAsyncUpdateCheck(currentLocal, cacheDir, cacheFile);
+        if (localVer) triggerAsyncUpdateCheck(localVer);
       }
     } else {
       const localVer = getLocalClaudeVersion();
-      if (localVer) triggerAsyncUpdateCheck(localVer, cacheDir, cacheFile);
+      if (localVer) triggerAsyncUpdateCheck(localVer);
     }
   } catch (e) {}
   return '';
 }
 
 // ── Fetch usage data (cached 60s) ────────────────────────
+const USAGE_CACHE_FILE = path.join(CACHE_DIR, 'statusline-usage-cache.json');
+
 function fetchUsageData() {
   return new Promise(resolve => {
-    const cacheDir = path.join(os.tmpdir(), 'claude');
-    const cacheFile = path.join(cacheDir, 'statusline-usage-cache.json');
     const cacheMaxAge = 60;
 
     try {
-      if (fs.existsSync(cacheFile)) {
-        const stat = fs.statSync(cacheFile);
-        const age = (Date.now() - stat.mtimeMs) / 1000;
-        if (age < cacheMaxAge) {
-          return resolve(JSON.parse(fs.readFileSync(cacheFile, 'utf8')));
-        }
+      const stat = fs.statSync(USAGE_CACHE_FILE);
+      const age = (Date.now() - stat.mtimeMs) / 1000;
+      if (age < cacheMaxAge) {
+        return resolve(readJsonFile(USAGE_CACHE_FILE));
       }
     } catch (e) {}
 
     const token = getOAuthToken();
     if (!token) return resolve(null);
+
+    const staleCache = readJsonFile(USAGE_CACHE_FILE);
 
     const req = https.request({
       hostname: 'api.anthropic.com',
@@ -223,53 +227,27 @@ function fetchUsageData() {
         try {
           const data = JSON.parse(body);
           if (data.five_hour) {
-            try {
-              fs.mkdirSync(cacheDir, { recursive: true });
-              fs.writeFileSync(cacheFile, body);
-            } catch (e) {}
+            writeJsonCache(USAGE_CACHE_FILE, body);
             return resolve(data);
           }
         } catch (e) {}
-        try {
-          if (fs.existsSync(cacheFile)) {
-            return resolve(JSON.parse(fs.readFileSync(cacheFile, 'utf8')));
-          }
-        } catch (e) {}
-        resolve(null);
+        resolve(staleCache);
       });
     });
-    req.on('error', () => {
-      try {
-        if (fs.existsSync(cacheFile)) {
-          return resolve(JSON.parse(fs.readFileSync(cacheFile, 'utf8')));
-        }
-      } catch (e) {}
-      resolve(null);
-    });
+    req.on('error', () => resolve(staleCache));
     req.on('timeout', () => { req.destroy(); });
     req.end();
   });
 }
 
 // ── Format usage segments ────────────────────────────────
-function formatSession(usage) {
-  if (!usage?.five_hour) return '';
-  const pct = Math.round(Number(usage.five_hour.utilization) || 0);
-  const reset = formatResetTime(usage.five_hour.resets_at, 'time');
+function formatUsageTier(usage, key, label, resetStyle) {
+  if (!usage?.[key]) return '';
+  const pct = Math.round(Number(usage[key].utilization) || 0);
+  const reset = formatResetTime(usage[key].resets_at, resetStyle);
   const bar = buildBar(pct);
   const pctCol = colorForPct(pct);
-  let out = `${c.label}s${c.reset} ${bar} ${pctCol}${pct}%${c.reset}`;
-  if (reset) out += ` ${c.dim}⟳ ${reset}${c.reset}`;
-  return out;
-}
-
-function formatWeekly(usage) {
-  if (!usage?.seven_day) return '';
-  const pct = Math.round(Number(usage.seven_day.utilization) || 0);
-  const reset = formatResetTime(usage.seven_day.resets_at, 'datetime');
-  const bar = buildBar(pct);
-  const pctCol = colorForPct(pct);
-  let out = `${c.label}w${c.reset} ${bar} ${pctCol}${pct}%${c.reset}`;
+  let out = `${c.label}${label}${c.reset} ${bar} ${pctCol}${pct}%${c.reset}`;
   if (reset) out += ` ${c.dim}⟳ ${reset}${c.reset}`;
   return out;
 }
@@ -298,12 +276,15 @@ process.stdin.on('end', async () => {
       if (session) {
         try {
           const bridgePath = path.join(os.tmpdir(), `claude-ctx-${session}.json`);
-          fs.writeFileSync(bridgePath, JSON.stringify({
-            session_id: session,
-            remaining_percentage: remaining,
-            used_pct: used,
-            timestamp: Math.floor(Date.now() / 1000)
-          }));
+          const prev = readJsonFile(bridgePath);
+          if (!prev || prev.used_pct !== used) {
+            fs.writeFileSync(bridgePath, JSON.stringify({
+              session_id: session,
+              remaining_percentage: remaining,
+              used_pct: used,
+              timestamp: Math.floor(Date.now() / 1000)
+            }));
+          }
         } catch (e) {}
       }
 
@@ -316,23 +297,22 @@ process.stdin.on('end', async () => {
       }
     }
 
-    // Fetch usage data
-    const usage = await fetchUsageData();
+    const usagePromise = fetchUsageData();
+    const ccUpdate = getClaudeUpdateIndicator();
+    const usage = await usagePromise;
 
-    // Build line: [CC update |] dir | context | session | weekly | model
     const sep = ` ${c.dim}|${c.reset} `;
     const parts = [];
 
-    const ccUpdate = getClaudeUpdateIndicator();
     if (ccUpdate) parts.push(ccUpdate);
 
     parts.push(`${c.dim}${path.basename(dir)}${c.reset}`);
     if (ctx) parts.push(ctx);
 
-    const sessionStr = formatSession(usage);
+    const sessionStr = formatUsageTier(usage, 'five_hour', 's', 'time');
     if (sessionStr) parts.push(sessionStr);
 
-    const weeklyStr = formatWeekly(usage);
+    const weeklyStr = formatUsageTier(usage, 'seven_day', 'w', 'datetime');
     if (weeklyStr) parts.push(weeklyStr);
 
     parts.push(`${c.dim}${model}${c.reset}`);
