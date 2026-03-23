@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 172" width="440" height="172">
+  <style>
+    text { font-family: JetBrains Mono, Cascadia Code, Consolas, monospace; font-size: 14px; }
+    .bg { fill: #1e1e2e; rx: 8; }
+    .label { fill: #6c7086; }
+    .bar-filled { fill: #22c55e; }
+    .bar-empty { fill: #45475a; }
+    .pct { fill: #cdd6f4; }
+  </style>
+  <rect class="bg" width="440" height="172" />
+  <text x="20" y="38" class="label">tiny    </text>
+  <text x="112.0" y="38" fill="#22c55e">███</text>
+  <text x="143.5" y="38" fill="#45475a">░</text>
+  <text x="162.0" y="38" class="pct">75%</text>
+  <text x="20" y="66" class="label">small   </text>
+  <text x="112.0" y="66" fill="#22c55e">████</text>
+  <text x="154.0" y="66" fill="#45475a">░░</text>
+  <text x="183.0" y="66" class="pct">75%</text>
+  <text x="20" y="94" class="label">medium  </text>
+  <text x="112.0" y="94" fill="#22c55e">███████</text>
+  <text x="185.5" y="94" fill="#45475a">░░░</text>
+  <text x="225.0" y="94" class="pct">75%</text>
+  <text x="20" y="122" class="label">large   </text>
+  <text x="112.0" y="122" fill="#22c55e">███████████</text>
+  <text x="227.5" y="122" fill="#45475a">░░░░</text>
+  <text x="277.5" y="122" class="pct">75%</text>
+  <text x="20" y="150" class="label">xl      </text>
+  <text x="112.0" y="150" fill="#22c55e">███████████████</text>
+  <text x="269.5" y="150" fill="#45475a">░░░░░</text>
+  <text x="330.0" y="150" class="pct">75%</text>
+</svg>

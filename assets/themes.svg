@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 284" width="480" height="284">
+  <style>
+    text { font-family: JetBrains Mono, Cascadia Code, Consolas, monospace; font-size: 14px; }
+    .bg { fill: #1e1e2e; rx: 8; }
+    .label { fill: #6c7086; }
+    .bar-filled { fill: #22c55e; }
+    .bar-empty { fill: #45475a; }
+    .pct { fill: #cdd6f4; }
+  </style>
+  <rect class="bg" width="480" height="284" />
+  <text x="20" y="38" class="label">default  </text>
+  <text x="122.5" y="38" fill="#22c55e">█</text>
+  <text x="133.0" y="38" fill="#45475a">░░░░</text>
+  <text x="179.0" y="38" fill="#22c55e">30%</text>
+  <text x="233.0" y="38" fill="#eab308">███</text>
+  <text x="264.5" y="38" fill="#45475a">░░</text>
+  <text x="289.5" y="38" fill="#eab308">65%</text>
+  <text x="343.5" y="38" fill="#ef4444">████</text>
+  <text x="385.5" y="38" fill="#45475a">░</text>
+  <text x="400.0" y="38" fill="#ef4444">90%</text>
+
+  <text x="20" y="66" class="label">ocean    </text>
+  <text x="122.5" y="66" fill="#06b6d4">█</text>
+  <text x="133.0" y="66" fill="#45475a">░░░░</text>
+  <text x="179.0" y="66" fill="#06b6d4">30%</text>
+  <text x="233.0" y="66" fill="#3b82f6">███</text>
+  <text x="264.5" y="66" fill="#45475a">░░</text>
+  <text x="289.5" y="66" fill="#3b82f6">65%</text>
+  <text x="343.5" y="66" fill="#a855f7">████</text>
+  <text x="385.5" y="66" fill="#45475a">░</text>
+  <text x="400.0" y="66" fill="#a855f7">90%</text>
+
+  <text x="20" y="94" class="label">sunset   </text>
+  <text x="122.5" y="94" fill="#eab308">█</text>
+  <text x="133.0" y="94" fill="#45475a">░░░░</text>
+  <text x="179.0" y="94" fill="#eab308">30%</text>
+  <text x="233.0" y="94" fill="#f97316">███</text>
+  <text x="264.5" y="94" fill="#45475a">░░</text>
+  <text x="289.5" y="94" fill="#f97316">65%</text>
+  <text x="343.5" y="94" fill="#ef4444">████</text>
+  <text x="385.5" y="94" fill="#45475a">░</text>
+  <text x="400.0" y="94" fill="#ef4444">90%</text>
+
+  <text x="20" y="122" class="label">mono     </text>
+  <text x="122.5" y="122" fill="#d4d4d8">█</text>
+  <text x="133.0" y="122" fill="#45475a">░░░░</text>
+  <text x="179.0" y="122" fill="#d4d4d8">30%</text>
+  <text x="233.0" y="122" fill="#71717a">███</text>
+  <text x="264.5" y="122" fill="#45475a">░░</text>
+  <text x="289.5" y="122" fill="#71717a">65%</text>
+  <text x="343.5" y="122" fill="#fafafa">████</text>
+  <text x="385.5" y="122" fill="#45475a">░</text>
+  <text x="400.0" y="122" fill="#fafafa">90%</text>
+
+  <text x="20" y="150" class="label">neon     </text>
+  <text x="122.5" y="150" fill="#00ff41">█</text>
+  <text x="133.0" y="150" fill="#45475a">░░░░</text>
+  <text x="179.0" y="150" fill="#00ff41">30%</text>
+  <text x="233.0" y="150" fill="#ff00ff">███</text>
+  <text x="264.5" y="150" fill="#45475a">░░</text>
+  <text x="289.5" y="150" fill="#ff00ff">65%</text>
+  <text x="343.5" y="150" fill="#ff0040">████</text>
+  <text x="385.5" y="150" fill="#45475a">░</text>
+  <text x="400.0" y="150" fill="#ff0040">90%</text>
+
+  <text x="20" y="178" class="label">frost    </text>
+  <text x="122.5" y="178" fill="#93c5fd">█</text>
+  <text x="133.0" y="178" fill="#45475a">░░░░</text>
+  <text x="179.0" y="178" fill="#93c5fd">30%</text>
+  <text x="233.0" y="178" fill="#60a5fa">███</text>
+  <text x="264.5" y="178" fill="#45475a">░░</text>
+  <text x="289.5" y="178" fill="#60a5fa">65%</text>
+  <text x="343.5" y="178" fill="#3b82f6">████</text>
+  <text x="385.5" y="178" fill="#45475a">░</text>
+  <text x="400.0" y="178" fill="#3b82f6">90%</text>
+
+  <text x="20" y="206" class="label">ember    </text>
+  <text x="122.5" y="206" fill="#fbbf24">█</text>
+  <text x="133.0" y="206" fill="#45475a">░░░░</text>
+  <text x="179.0" y="206" fill="#fbbf24">30%</text>
+  <text x="233.0" y="206" fill="#ea580c">███</text>
+  <text x="264.5" y="206" fill="#45475a">░░</text>
+  <text x="289.5" y="206" fill="#ea580c">65%</text>
+  <text x="343.5" y="206" fill="#dc2626">████</text>
+  <text x="385.5" y="206" fill="#45475a">░</text>
+  <text x="400.0" y="206" fill="#dc2626">90%</text>
+
+  <text x="20" y="234" class="label">candy    </text>
+  <text x="122.5" y="234" fill="#f9a8d4">█</text>
+  <text x="133.0" y="234" fill="#45475a">░░░░</text>
+  <text x="179.0" y="234" fill="#f9a8d4">30%</text>
+  <text x="233.0" y="234" fill="#c084fc">███</text>
+  <text x="264.5" y="234" fill="#45475a">░░</text>
+  <text x="289.5" y="234" fill="#c084fc">65%</text>
+  <text x="343.5" y="234" fill="#f43f5e">████</text>
+  <text x="385.5" y="234" fill="#45475a">░</text>
+  <text x="400.0" y="234" fill="#f43f5e">90%</text>
+
+  <text x="20" y="262" class="label">matrix   </text>
+  <text x="122.5" y="262" fill="#00ff41">█</text>
+  <text x="133.0" y="262" fill="#45475a">░░░░</text>
+  <text x="179.0" y="262" fill="#00ff41">30%</text>
+  <text x="233.0" y="262" fill="#16a34a">███</text>
+  <text x="264.5" y="262" fill="#45475a">░░</text>
+  <text x="289.5" y="262" fill="#16a34a">65%</text>
+  <text x="343.5" y="262" fill="#166534">████</text>
+  <text x="385.5" y="262" fill="#45475a">░</text>
+  <text x="400.0" y="262" fill="#166534">90%</text>
+
+</svg>

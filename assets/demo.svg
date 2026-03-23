@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 86" width="720" height="86">
+  <style>
+    text { font-family: JetBrains Mono, Cascadia Code, Consolas, monospace; font-size: 13px; }
+  </style>
+  <rect width="720" height="86" fill="#1e1e2e" rx="8" />
+  <text x="20" y="28" fill="#89b4fa">my-project</text>
+  <text x="104.0" y="28" fill="#6c7086"> | </text>
+  <text x="129.2" y="28" fill="#06b6d4">Opus 4.6</text>
+  <text x="196.39999999999998" y="28" fill="#6c7086"> | </text>
+  <text x="221.59999999999997" y="28" fill="#22c55e">██████</text>
+  <text x="272.0" y="28" fill="#45475a">░░░░░░░░░</text>
+  <text x="347.6" y="28" fill="#cdd6f4"> 42%</text>
+  <text x="381.20000000000005" y="28" fill="#6c7086"> | </text>
+  <text x="406.40000000000003" y="28" fill="#eab308">(main</text>
+  <text x="448.40000000000003" y="28" fill="#6c7086"> | </text>
+  <text x="473.6" y="28" fill="#6c7086">3 files </text>
+  <text x="540.8000000000001" y="28" fill="#22c55e">+48 </text>
+  <text x="574.4000000000001" y="28" fill="#ef4444">-12</text>
+  <text x="599.6000000000001" y="28" fill="#eab308">)</text>
+  <text x="20" y="56" fill="#a855f7">CC 2.1.80&gt;2.1.81</text>
+  <text x="154.4" y="56" fill="#6c7086"> | </text>
+  <text x="179.60000000000002" y="56" fill="#89b4fa">api-server</text>
+  <text x="263.6" y="56" fill="#6c7086"> | </text>
+  <text x="288.8" y="56" fill="#06b6d4">Sonnet 4.6</text>
+  <text x="372.8" y="56" fill="#6c7086"> | </text>
+  <text x="398.0" y="56" fill="#eab308">███████████</text>
+  <text x="490.4" y="56" fill="#45475a">░░░░</text>
+  <text x="524.0" y="56" fill="#cdd6f4"> 78%</text>
+  <text x="557.6" y="56" fill="#6c7086"> [$0.4821]</text>
+  <text x="620" y="29" fill="#45475a" font-size="10">up to date</text>
+  <text x="610" y="57" fill="#45475a" font-size="10">update available</text>
+</svg>

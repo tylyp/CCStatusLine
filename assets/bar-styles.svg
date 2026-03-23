@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 312" width="420" height="312">
+  <style>
+    text { font-family: JetBrains Mono, Cascadia Code, Consolas, monospace; font-size: 14px; }
+    .bg { fill: #1e1e2e; rx: 8; }
+    .label { fill: #6c7086; }
+    .bar-filled { fill: #22c55e; }
+    .bar-empty { fill: #45475a; }
+    .pct { fill: #cdd6f4; }
+  </style>
+  <rect class="bg" width="420" height="312" />
+  <text x="20" y="38" class="label">classic  </text>
+  <text x="122.5" y="38" fill="#22c55e">██████████</text>
+  <text x="227.5" y="38" fill="#45475a">░░░░░</text>
+  <text x="288.0" y="38" class="pct">65%</text>
+  <text x="20" y="66" class="label">block    </text>
+  <text x="122.5" y="66" fill="#22c55e">██████████</text>
+  <text x="227.5" y="66" fill="#45475a">▒▒▒▒▒</text>
+  <text x="288.0" y="66" class="pct">65%</text>
+  <text x="20" y="94" class="label">shade    </text>
+  <text x="122.5" y="94" fill="#22c55e">▓▓▓▓▓▓▓▓▓▓</text>
+  <text x="227.5" y="94" fill="#45475a">░░░░░</text>
+  <text x="288.0" y="94" class="pct">65%</text>
+  <text x="20" y="122" class="label">dot      </text>
+  <text x="122.5" y="122" fill="#22c55e">●●●●●●●●●●</text>
+  <text x="227.5" y="122" fill="#45475a">○○○○○</text>
+  <text x="288.0" y="122" class="pct">65%</text>
+  <text x="20" y="150" class="label">square   </text>
+  <text x="122.5" y="150" fill="#22c55e">■■■■■■■■■■</text>
+  <text x="227.5" y="150" fill="#45475a">□□□□□</text>
+  <text x="288.0" y="150" class="pct">65%</text>
+  <text x="20" y="178" class="label">star     </text>
+  <text x="122.5" y="178" fill="#22c55e">★★★★★★★★★★</text>
+  <text x="227.5" y="178" fill="#45475a">☆☆☆☆☆</text>
+  <text x="288.0" y="178" class="pct">65%</text>
+  <text x="20" y="206" class="label">pipe     </text>
+  <text x="122.5" y="206" fill="#22c55e">┃┃┃┃┃┃┃┃┃┃</text>
+  <text x="227.5" y="206" fill="#45475a">┆┆┆┆┆</text>
+  <text x="288.0" y="206" class="pct">65%</text>
+  <text x="20" y="234" class="label">thin     </text>
+  <text x="122.5" y="234" fill="#22c55e">━━━━━━━━━━</text>
+  <text x="227.5" y="234" fill="#45475a">─────</text>
+  <text x="288.0" y="234" class="pct">65%</text>
+  <text x="20" y="262" class="label">braille  </text>
+  <text x="122.5" y="262" fill="#22c55e">⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</text>
+  <text x="227.5" y="262" fill="#45475a">⡀⡀⡀⡀⡀</text>
+  <text x="288.0" y="262" class="pct">65%</text>
+  <text x="20" y="290" class="label">arrow    </text>
+  <text x="122.5" y="290" fill="#22c55e">▶▶▶▶▶▶▶▶▶▶</text>
+  <text x="227.5" y="290" fill="#45475a">▷▷▷▷▷</text>
+  <text x="288.0" y="290" class="pct">65%</text>
+</svg>
