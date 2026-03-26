@@ -189,12 +189,13 @@ function getClaudeUpdateIndicator() {
   return '';
 }
 
-// ── Fetch usage data (cached 60s) ────────────────────────
+// ── Fetch usage data (cached 5 min, cross-session dedup) ─
 const USAGE_CACHE_FILE = path.join(CACHE_DIR, 'statusline-usage-cache.json');
+const USAGE_ATTEMPT_FILE = path.join(CACHE_DIR, 'statusline-usage-attempt');
 
 function fetchUsageData() {
   return new Promise(resolve => {
-    const cacheMaxAge = 60;
+    const cacheMaxAge = 300; // 5 minutes — prevents multi-session API spam
 
     try {
       const stat = fs.statSync(USAGE_CACHE_FILE);
@@ -204,8 +205,20 @@ function fetchUsageData() {
       }
     } catch (e) {}
 
+    // Cross-session dedup: only one session attempts the API per 60s
+    try {
+      const attemptStat = fs.statSync(USAGE_ATTEMPT_FILE);
+      const attemptAge = (Date.now() - attemptStat.mtimeMs) / 1000;
+      if (attemptAge < 60) {
+        return resolve(readJsonFile(USAGE_CACHE_FILE));
+      }
+    } catch (e) {}
+
     const token = getOAuthToken();
     if (!token) return resolve(null);
+
+    // Touch attempt file so other sessions skip
+    writeJsonCache(USAGE_ATTEMPT_FILE, String(Date.now()));
 
     const staleCache = readJsonFile(USAGE_CACHE_FILE);
 
@@ -224,6 +237,29 @@ function fetchUsageData() {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
+        // Handle 429: usage is at or near limit — don't fall back to stale data
+        if (res.statusCode === 429) {
+          if (staleCache?.five_hour) {
+            // Only bump session to 100% — keep other tiers as-is (stale but closer to truth)
+            const atLimit = { ...staleCache };
+            atLimit.five_hour = { ...staleCache.five_hour, utilization: 100 };
+            writeJsonCache(USAGE_CACHE_FILE, JSON.stringify(atLimit));
+            return resolve(atLimit);
+          }
+          // No stale cache at all — synthesize minimal at-limit data
+          const now = new Date();
+          const resetIn5h = new Date(now.getTime() + 5 * 3600000).toISOString();
+          const atLimit = {
+            five_hour: { utilization: 100, resets_at: resetIn5h },
+          };
+          writeJsonCache(USAGE_CACHE_FILE, JSON.stringify(atLimit));
+          return resolve(atLimit);
+        }
+
+        if (res.statusCode !== 200) {
+          return resolve(staleCache);
+        }
+
         try {
           const data = JSON.parse(body);
           if (data.five_hour) {
