@@ -195,7 +195,7 @@ const USAGE_ATTEMPT_FILE = path.join(CACHE_DIR, 'statusline-usage-attempt');
 
 function fetchUsageData() {
   return new Promise(resolve => {
-    const cacheMaxAge = 300; // 5 minutes — prevents multi-session API spam
+    const cacheMaxAge = 600; // 10 minutes — prevents multi-session API spam
 
     try {
       const stat = fs.statSync(USAGE_CACHE_FILE);
@@ -333,10 +333,14 @@ process.stdin.on('end', async () => {
     if (ctx) parts.push(ctx);
 
     const sessionStr = formatUsageTier(usage, 'five_hour', 's', 'time');
-    if (sessionStr) parts.push(sessionStr);
-
     const weeklyStr = formatUsageTier(usage, 'seven_day', 'w', 'datetime');
-    if (weeklyStr) parts.push(weeklyStr);
+    if (sessionStr) {
+      parts.push(sessionStr);
+      if (weeklyStr) parts.push(weeklyStr);
+    } else if (!usage) {
+      parts.push(`${c.label}s${c.reset} ${c.dim}?${c.reset}`);
+      parts.push(`${c.label}w${c.reset} ${c.dim}?${c.reset}`);
+    }
 
     parts.push(`${c.dim}${model}${c.reset}`);
 
