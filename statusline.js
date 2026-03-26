@@ -237,26 +237,13 @@ function fetchUsageData() {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
-        // Handle 429: usage is at or near limit — don't fall back to stale data
-        if (res.statusCode === 429) {
-          if (staleCache?.five_hour) {
-            // Only bump session to 100% — keep other tiers as-is (stale but closer to truth)
-            const atLimit = { ...staleCache };
-            atLimit.five_hour = { ...staleCache.five_hour, utilization: 100 };
-            writeJsonCache(USAGE_CACHE_FILE, JSON.stringify(atLimit));
-            return resolve(atLimit);
-          }
-          // No stale cache at all — synthesize minimal at-limit data
-          const now = new Date();
-          const resetIn5h = new Date(now.getTime() + 5 * 3600000).toISOString();
-          const atLimit = {
-            five_hour: { utilization: 100, resets_at: resetIn5h },
-          };
-          writeJsonCache(USAGE_CACHE_FILE, JSON.stringify(atLimit));
-          return resolve(atLimit);
-        }
-
+        // Non-200: touch cache file to prevent immediate retry, but use shorter TTL
+        // so it recovers faster than the full 5-min window
         if (res.statusCode !== 200) {
+          if (staleCache) {
+            // Re-write stale data to refresh mtime — retries in 5 min instead of immediately
+            writeJsonCache(USAGE_CACHE_FILE, JSON.stringify(staleCache));
+          }
           return resolve(staleCache);
         }
 
