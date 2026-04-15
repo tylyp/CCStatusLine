@@ -25,7 +25,7 @@ for (const loc of CONFIG_LOCATIONS) {
 }
 
 const BAR_SIZE_MAP = { tiny: 4, small: 6, medium: 10, large: 15, xl: 20 };
-const BAR_WIDTH = BAR_SIZE_MAP[cfg.bar_size] || 20;
+const BAR_WIDTH = BAR_SIZE_MAP[cfg.bar_size] || 10;
 
 const BAR_STYLES = {
   classic: ['█', '░'], shade: ['▓', '░'],
@@ -275,6 +275,17 @@ function formatUsageTier(usage, key, label, resetStyle) {
   return out;
 }
 
+// ── Peak hours indicator (Moscow weekdays 16:00–22:00) ──
+function getPeakHoursIndicator() {
+  const now = new Date();
+  const day = now.getDay();
+  const hour = now.getHours();
+  if (day >= 1 && day <= 5 && hour >= 16 && hour < 22) {
+    return `${c.high}🔥 PEAK${c.reset} ${c.dim}16:00-22:00${c.reset}`;
+  }
+  return '';
+}
+
 // ── Main ─────────────────────────────────────────────────
 let input = '';
 const stdinTimeout = setTimeout(() => process.exit(0), 3000);
@@ -329,17 +340,20 @@ process.stdin.on('end', async () => {
 
     if (ccUpdate) parts.push(ccUpdate);
 
+    const peak = getPeakHoursIndicator();
+    if (peak) parts.push(peak);
+
     parts.push(`${c.dim}${path.basename(dir)}${c.reset}`);
     if (ctx) parts.push(ctx);
 
-    const sessionStr = formatUsageTier(usage, 'five_hour', 's', 'time');
-    const weeklyStr = formatUsageTier(usage, 'seven_day', 'w', 'datetime');
+    const sessionStr = formatUsageTier(usage, 'five_hour', '5h', 'time');
+    const weeklyStr = formatUsageTier(usage, 'seven_day', '7d', 'datetime');
     if (sessionStr) {
       parts.push(sessionStr);
       if (weeklyStr) parts.push(weeklyStr);
     } else if (!usage) {
-      parts.push(`${c.label}s${c.reset} ${c.dim}?${c.reset}`);
-      parts.push(`${c.label}w${c.reset} ${c.dim}?${c.reset}`);
+      parts.push(`${c.label}5h${c.reset} ${c.dim}?${c.reset}`);
+      parts.push(`${c.label}7d${c.reset} ${c.dim}?${c.reset}`);
     }
 
     parts.push(`${c.dim}${model}${c.reset}`);
