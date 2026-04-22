@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// CCStatusLine - Configurable Claude Code status line
-// https://github.com/tylyp/CCStatusLine
+// YetAnotherCCStatusLine - Configurable Claude Code status line
+// https://github.com/tylyp/YetAnotherCCStatusLine
 // Shows: [CC update |] dir | context | 5h | 7d | model
 
 const fs = require('fs');
@@ -295,7 +295,8 @@ process.stdin.on('end', async () => {
   clearTimeout(stdinTimeout);
   try {
     const data = JSON.parse(input);
-    const model = data.model?.display_name || 'Claude';
+    let model = data.model?.display_name || 'Claude';
+    if (data.context_window?.context_window_size >= 1000000) model += ' (1M)';
     const dir = data.workspace?.current_dir || process.cwd();
     const session = data.session_id || '';
     const remaining = data.context_window?.remaining_percentage;
@@ -324,10 +325,16 @@ process.stdin.on('end', async () => {
 
       const bar = buildBar(used);
       const pctCol = colorForPct(used);
+      const size = data.context_window?.context_window_size;
+      let absStr = '';
+      if (size) {
+        const usedTokens = size * (100 - remaining) / 100;
+        absStr = ` ${c.dim}(${Math.round(usedTokens / 1000)}k)${c.reset}`;
+      }
       if (used >= 80) {
-        ctx = `\x1b[5m${c.high}💀${c.reset} ${bar} ${pctCol}${used}%${c.reset}`;
+        ctx = `\x1b[5m${c.high}💀${c.reset} ${bar} ${pctCol}${used}%${c.reset}${absStr}`;
       } else {
-        ctx = `${bar} ${pctCol}${used}%${c.reset}`;
+        ctx = `${bar} ${pctCol}${used}%${c.reset}${absStr}`;
       }
     }
 

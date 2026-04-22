@@ -1,13 +1,13 @@
 #!/bin/bash
-# CCStatusLine installer
+# YetAnotherCCStatusLine installer
 
 set -e
 
 INSTALL_DIR="$HOME/.config/ccstatusline"
-REPO="https://raw.githubusercontent.com/tylyp/CCStatusLine/main"
+REPO="https://raw.githubusercontent.com/tylyp/YetAnotherCCStatusLine/main"
 SETTINGS_FILE="$HOME/.claude/settings.json"
 
-echo "Installing CCStatusLine..."
+echo "Installing YetAnotherCCStatusLine..."
 
 # Create install directory
 mkdir -p "$INSTALL_DIR"

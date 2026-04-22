@@ -1,12 +1,12 @@
-# CCStatusLine installer for Windows
+# YetAnotherCCStatusLine installer for Windows
 
 $ErrorActionPreference = "Stop"
 
 $InstallDir = "$env:USERPROFILE\.config\ccstatusline"
-$Repo = "https://raw.githubusercontent.com/tylyp/CCStatusLine/main"
+$Repo = "https://raw.githubusercontent.com/tylyp/YetAnotherCCStatusLine/main"
 $SettingsFile = "$env:USERPROFILE\.claude\settings.json"
 
-Write-Host "Installing CCStatusLine..."
+Write-Host "Installing YetAnotherCCStatusLine..."
 
 # Create install directory
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null

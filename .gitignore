@@ -17,3 +17,6 @@ Desktop.ini
 # Temp
 *.tmp
 *.log
+
+# Local user config (copy config.example.json to config.json to customize)
+config.json

@@ -1,10 +1,10 @@
-# CCStatusLine
+# YetAnotherCCStatusLine
 
 A configurable status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) that shows context usage, session and weekly rate limits, update notifications, and model info — right in your terminal.
 
 <p align="center">
-  <img src="assets/demo-dark.svg" alt="CCStatusLine dark terminal" /><br/>
-  <img src="assets/demo-light.svg" alt="CCStatusLine light terminal" />
+  <img src="assets/demo-dark.svg" alt="YetAnotherCCStatusLine dark terminal" /><br/>
+  <img src="assets/demo-light.svg" alt="YetAnotherCCStatusLine light terminal" />
 </p>
 
 ![Node.js](https://img.shields.io/badge/node.js-%23339933.svg?style=flat&logo=node.js&logoColor=white)
@@ -27,13 +27,13 @@ A configurable status line for [Claude Code](https://docs.anthropic.com/en/docs/
 ### macOS / Linux
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tylyp/CCStatusLine/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/tylyp/YetAnotherCCStatusLine/main/install.sh | bash
 ```
 
 ### Windows (PowerShell)
 
 ```powershell
-irm https://raw.githubusercontent.com/tylyp/CCStatusLine/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/tylyp/YetAnotherCCStatusLine/main/install.ps1 | iex
 ```
 
 Restart Claude Code and you're done.
@@ -54,7 +54,7 @@ Threshold-based coloring: **< 50%** low, **50-79%** mid, **80%+** high.
 
 ## Configuration
 
-Edit `~/.config/ccstatusline/config.json`:
+Copy `config.example.json` to `config.json` (or `~/.config/ccstatusline/config.json`) and edit:
 
 ```json
 {
