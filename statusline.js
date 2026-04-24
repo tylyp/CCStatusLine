@@ -193,6 +193,23 @@ function getClaudeUpdateIndicator() {
 const USAGE_CACHE_FILE = path.join(CACHE_DIR, 'statusline-usage-cache.json');
 const USAGE_ATTEMPT_FILE = path.join(CACHE_DIR, 'statusline-usage-attempt');
 
+// Normalize stdin rate_limits (CC ≥2.1.80) into the shape formatUsageTier expects.
+// Stdin shape: { five_hour: { used_percentage, resets_at (epoch s) }, seven_day: {...} }
+// Target shape: { five_hour: { utilization, resets_at (ISO) }, seven_day: {...} }
+function normalizeStdinRateLimits(rl) {
+  if (!rl || typeof rl !== 'object') return null;
+  const conv = tier => {
+    if (!tier) return undefined;
+    const epoch = Number(tier.resets_at);
+    const iso = Number.isFinite(epoch) ? new Date(epoch * 1000).toISOString() : null;
+    return { utilization: Number(tier.used_percentage) || 0, resets_at: iso };
+  };
+  const out = {};
+  if (rl.five_hour) out.five_hour = conv(rl.five_hour);
+  if (rl.seven_day) out.seven_day = conv(rl.seven_day);
+  return out.five_hour || out.seven_day ? out : null;
+}
+
 function fetchUsageData() {
   return new Promise(resolve => {
     const cacheMaxAge = 600; // 10 minutes — prevents multi-session API spam
@@ -295,6 +312,7 @@ process.stdin.on('end', async () => {
   clearTimeout(stdinTimeout);
   try {
     const data = JSON.parse(input);
+
     let model = data.model?.display_name || 'Claude';
     if (data.context_window?.context_window_size >= 1000000) model += ' (1M)';
     const dir = data.workspace?.current_dir || process.cwd();
@@ -338,33 +356,39 @@ process.stdin.on('end', async () => {
       }
     }
 
-    const usagePromise = fetchUsageData();
+    // Prefer stdin rate_limits (CC ≥2.1.80) — fresh every render, zero API calls.
+    // Fall back to cached API data only when stdin lacks the field (fresh boot,
+    // pre-first-turn, or older CC versions).
+    const stdinUsage = normalizeStdinRateLimits(data.rate_limits);
+    const usagePromise = stdinUsage ? Promise.resolve(stdinUsage) : fetchUsageData();
     const ccUpdate = getClaudeUpdateIndicator();
     const usage = await usagePromise;
 
-    const sep = ` ${c.dim}|${c.reset} `;
-    const parts = [];
-
-    if (ccUpdate) parts.push(ccUpdate);
-
-    const peak = getPeakHoursIndicator();
-    if (peak) parts.push(peak);
-
-    parts.push(`${c.dim}${path.basename(dir)}${c.reset}`);
-    if (ctx) parts.push(ctx);
-
-    const sessionStr = formatUsageTier(usage, 'five_hour', '5h', 'time');
-    const weeklyStr = formatUsageTier(usage, 'seven_day', '7d', 'datetime');
-    if (sessionStr) {
-      parts.push(sessionStr);
-      if (weeklyStr) parts.push(weeklyStr);
-    } else if (!usage) {
-      parts.push(`${c.label}5h${c.reset} ${c.dim}?${c.reset}`);
-      parts.push(`${c.label}7d${c.reset} ${c.dim}?${c.reset}`);
+    // Opportunistically refresh the shared cache from fresh stdin data so other
+    // sessions (and next boot) get recent numbers without an API call.
+    if (stdinUsage) {
+      try { writeJsonCache(USAGE_CACHE_FILE, JSON.stringify(stdinUsage)); } catch (e) {}
     }
 
-    parts.push(`${c.dim}${model}${c.reset}`);
+    const sep = ` ${c.dim}|${c.reset} `;
 
-    process.stdout.write(parts.join(sep));
+    const line1 = [];
+    const peak = getPeakHoursIndicator();
+    if (peak) line1.push(peak);
+    if (ccUpdate) line1.push(ccUpdate);
+    line1.push(`${c.dim}${path.basename(dir)}${c.reset}`);
+    line1.push(`${c.dim}${model}${c.reset}`);
+
+    const fiveHourStr = formatUsageTier(usage, 'five_hour', '5h ', 'time')
+      || (!usage ? `${c.label}5h ${c.reset} ${c.dim}?${c.reset}` : '');
+    const sevenDayStr = formatUsageTier(usage, 'seven_day', '7d ', 'datetime')
+      || (!usage ? `${c.label}7d ${c.reset} ${c.dim}?${c.reset}` : '');
+
+    const lines = [line1.join(sep)];
+    if (ctx) lines.push(`${c.label}ctx${c.reset} ${ctx}`);
+    if (fiveHourStr) lines.push(fiveHourStr);
+    if (sevenDayStr) lines.push(sevenDayStr);
+
+    process.stdout.write(lines.join('\n'));
   } catch (e) {}
 });
