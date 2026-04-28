@@ -1,6 +1,6 @@
 # YetAnotherCCStatusLine
 
-A configurable status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) that shows context usage, session and weekly rate limits, update notifications, and model info — right in your terminal.
+A configurable, 4-line status line for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). At a glance: where you are, what model you're on, how much context you've burned, and how close you are to the 5-hour and 7-day rate limits.
 
 <p align="center">
   <img src="assets/demo-dark.svg" alt="YetAnotherCCStatusLine dark terminal" /><br/>
@@ -10,17 +10,30 @@ A configurable status line for [Claude Code](https://docs.anthropic.com/en/docs/
 ![Node.js](https://img.shields.io/badge/node.js-%23339933.svg?style=flat&logo=node.js&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
+## Layout
+
+Four stacked lines, each conditional — empty rows collapse:
+
+```
+[🔥 PEAK 16:00-22:00 | ⬆ CC 2.1.85 | ] dir | model [(1M)]
+ctx <bar> NN% (Nk)
+5h  <bar> NN% ⟳ HH:MM
+7d  <bar> NN% ⟳ mon dd, HH:MM
+```
+
 ## Features
 
-- **Claude Code update notification** — hidden when up to date, appears when a new version is available
-- **Context window** — usage bar with percentage
-- **Session usage** — 5-hour rate limit bar with reset countdown
-- **Weekly usage** — 7-day rate limit bar with reset date/time
-- **Model name** — current model display
+- **Context window** — used % with a colored bar and absolute token count `(Nk)`. Accounts for Claude Code's auto-compact buffer so 100% means actually full. Pulses a `💀` at 80%+.
+- **5-hour rate limit** — bar, percent, and reset time. Read live from Claude Code stdin (CC ≥ 2.1.80) with no extra API calls; falls back to a cached OAuth API call on older versions.
+- **7-day rate limit** — same, with full reset date.
+- **1M context tag** — `(1M)` suffix when the active model is on the 1M context window.
+- **Claude Code update indicator** — `⬆ CC X.Y.Z` appears only when a newer version exists on npm. Hidden when up to date. Cached for 1 hour.
+- **Peak hours indicator** — `🔥 PEAK 16:00-22:00` on weekdays during Moscow afternoon-evening (a heuristic for Anthropic global capacity pressure).
 - **9 bar styles** — classic, shade, dot, square, star, pipe, thin, braille, arrow
 - **5 bar sizes** — tiny (4), small (6), medium (10), large (15), xl (20)
 - **9 color themes** — default, ocean, sunset, mono, neon, frost, ember, candy, matrix
-- Zero external dependencies (Node.js only)
+- **Cross-session dedup** — multiple Claude Code windows share one usage cache; only one session hits the API per minute.
+- Zero external dependencies (Node.js only).
 
 ## Installation
 
@@ -48,7 +61,7 @@ Restart Claude Code and you're done.
 
 ## Color Themes
 
-Threshold-based coloring: **< 50%** low, **50-79%** mid, **80%+** high.
+Threshold-based coloring: **< 50%** low, **50–79%** mid, **80%+** high.
 
 <img src="assets/themes.svg" alt="Color themes preview" />
 
@@ -78,7 +91,7 @@ Config file lookup order:
 ## Requirements
 
 - Node.js 16+
-- Claude Code CLI (for update checks)
+- Claude Code CLI (used for update checks and, on older versions, OAuth token for rate-limit data)
 
 ## License
 
