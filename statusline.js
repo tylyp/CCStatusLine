@@ -292,17 +292,6 @@ function formatUsageTier(usage, key, label, resetStyle) {
   return out;
 }
 
-// ── Peak hours indicator (Moscow weekdays 16:00–22:00) ──
-function getPeakHoursIndicator() {
-  const now = new Date();
-  const day = now.getDay();
-  const hour = now.getHours();
-  if (day >= 1 && day <= 5 && hour >= 16 && hour < 22) {
-    return `${c.high}🔥 PEAK${c.reset} ${c.dim}16:00-22:00${c.reset}`;
-  }
-  return '';
-}
-
 // ── Main ─────────────────────────────────────────────────
 let input = '';
 const stdinTimeout = setTimeout(() => process.exit(0), 3000);
@@ -314,7 +303,7 @@ process.stdin.on('end', async () => {
     const data = JSON.parse(input);
 
     let model = data.model?.display_name || 'Claude';
-    if (data.context_window?.context_window_size >= 1000000) model += ' (1M)';
+    if (data.context_window?.context_window_size >= 1000000 && !/1m/i.test(model)) model += ' (1M)';
     const dir = data.workspace?.current_dir || process.cwd();
     const session = data.session_id || '';
     const remaining = data.context_window?.remaining_percentage;
@@ -373,8 +362,6 @@ process.stdin.on('end', async () => {
     const sep = ` ${c.dim}|${c.reset} `;
 
     const line1 = [];
-    const peak = getPeakHoursIndicator();
-    if (peak) line1.push(peak);
     if (ccUpdate) line1.push(ccUpdate);
     line1.push(`${c.dim}${path.basename(dir)}${c.reset}`);
     line1.push(`${c.dim}${model}${c.reset}`);

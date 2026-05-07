@@ -15,7 +15,7 @@ A configurable, 4-line status line for [Claude Code](https://docs.anthropic.com/
 Four stacked lines, each conditional — empty rows collapse:
 
 ```
-[🔥 PEAK 16:00-22:00 | ⬆ CC 2.1.85 | ] dir | model [(1M)]
+[⬆ CC 2.1.85 | ] dir | model [(1M)]
 ctx <bar> NN% (Nk)
 5h  <bar> NN% ⟳ HH:MM
 7d  <bar> NN% ⟳ mon dd, HH:MM
@@ -28,7 +28,6 @@ ctx <bar> NN% (Nk)
 - **7-day rate limit** — same, with full reset date.
 - **1M context tag** — `(1M)` suffix when the active model is on the 1M context window.
 - **Claude Code update indicator** — `⬆ CC X.Y.Z` appears only when a newer version exists on npm. Hidden when up to date. Cached for 1 hour.
-- **Peak hours indicator** — `🔥 PEAK 16:00-22:00` on weekdays during Moscow afternoon-evening (a heuristic for Anthropic global capacity pressure).
 - **9 bar styles** — classic, shade, dot, square, star, pipe, thin, braille, arrow
 - **5 bar sizes** — tiny (4), small (6), medium (10), large (15), xl (20)
 - **9 color themes** — default, ocean, sunset, mono, neon, frost, ember, candy, matrix
