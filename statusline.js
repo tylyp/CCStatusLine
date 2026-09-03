@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 // YetAnotherCCStatusLine - Configurable Claude Code status line
 // https://github.com/tylyp/YetAnotherCCStatusLine
-// Shows: [CC update |] dir | context | 5h | 7d | model
+// Shows (4 lines): dir | model / context / 5h / 7d
 
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const https = require('https');
-const { execSync } = require('child_process');
 
 // ── Load config ──────────────────────────────────────────
 const CONFIG_LOCATIONS = [
@@ -55,7 +53,6 @@ const c = {
   mid:    rgb(...theme.mid),
   high:   rgb(...theme.high),
   label:  rgb(...theme.label),
-  ember:  '\x1b[38;2;160;70;20m',
   dim:    '\x1b[2m',
   reset:  '\x1b[0m',
 };
@@ -103,95 +100,37 @@ function writeJsonCache(filePath, data) {
   } catch (e) {}
 }
 
-// ── OAuth token resolution ───────────────────────────────
-function getOAuthToken() {
-  if (process.env.CLAUDE_CODE_OAUTH_TOKEN) return process.env.CLAUDE_CODE_OAUTH_TOKEN;
-  const claudeDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
-  const credsFile = path.join(claudeDir, '.credentials.json');
-  try {
-    const creds = readJsonFile(credsFile);
-    const token = creds?.claudeAiOauth?.accessToken;
-    if (token && token !== 'null') return token;
-  } catch (e) {}
-  return '';
-}
+// ── Stale bridge-file sweep (hourly, best effort) ────────
+// The context bridge below drops one claude-ctx-<session>.json into tmp per
+// session and nothing ever removes it. Sweep files older than a day, at most
+// once an hour, so tmp does not grow without bound.
+const BRIDGE_TTL_MS = 24 * 60 * 60 * 1000;
+const BRIDGE_SWEEP_FILE = path.join(CACHE_DIR, 'statusline-bridge-sweep');
 
-// ── Claude Code update checker (cached 1 hour) ──────────
-function getLocalClaudeVersion() {
+function sweepStaleBridgeFiles() {
   try {
-    const output = execSync('claude --version 2>/dev/null', { timeout: 3000, encoding: 'utf8' });
-    const match = output.trim().match(/(\d+\.\d+\.\d+)/);
-    return match ? match[1] : null;
-  } catch (e) {
-    return null;
+    const stat = fs.statSync(BRIDGE_SWEEP_FILE);
+    if (Date.now() - stat.mtimeMs < 3600000) return;
+  } catch (e) {}
+  writeJsonCache(BRIDGE_SWEEP_FILE, String(Date.now()));
+
+  const tmp = os.tmpdir();
+  let names;
+  try { names = fs.readdirSync(tmp); } catch (e) { return; }
+  for (const name of names) {
+    if (!/^claude-ctx-.+\.json$/.test(name)) continue;
+    const file = path.join(tmp, name);
+    try {
+      if (Date.now() - fs.statSync(file).mtimeMs > BRIDGE_TTL_MS) fs.unlinkSync(file);
+    } catch (e) {}
   }
 }
 
-function compareVersions(a, b) {
-  const pa = a.split('.').map(Number);
-  const pb = b.split('.').map(Number);
-  for (let i = 0; i < 3; i++) {
-    if ((pa[i] || 0) > (pb[i] || 0)) return 1;
-    if ((pa[i] || 0) < (pb[i] || 0)) return -1;
-  }
-  return 0;
-}
-
-const UPDATE_CACHE_FILE = path.join(CACHE_DIR, 'cc-update-check.json');
-
-function triggerAsyncUpdateCheck(localVer) {
-  const req = https.get('https://registry.npmjs.org/@anthropic-ai/claude-code/latest', { timeout: 5000 }, res => {
-    let body = '';
-    res.on('data', chunk => body += chunk);
-    res.on('end', () => {
-      try {
-        const data = JSON.parse(body);
-        const remoteVer = data.version;
-        if (remoteVer) {
-          writeJsonCache(UPDATE_CACHE_FILE, {
-            timestamp: Date.now(),
-            update_available: compareVersions(remoteVer, localVer) > 0,
-            local_version: localVer,
-            remote_version: remoteVer,
-          });
-        }
-      } catch (e) {}
-    });
-  });
-  req.on('error', () => {});
-  req.on('timeout', () => { req.destroy(); });
-}
-
-function getClaudeUpdateIndicator() {
-  const cacheTTL = 3600;
-
-  try {
-    const cache = readJsonFile(UPDATE_CACHE_FILE);
-    if (cache) {
-      const localVer = getLocalClaudeVersion();
-      const age = (Date.now() - cache.timestamp) / 1000;
-
-      if (age >= cacheTTL && localVer) {
-        triggerAsyncUpdateCheck(localVer);
-      }
-
-      if (cache.update_available) {
-        if (localVer && localVer === cache.local_version) {
-          return `${c.ember}⬆ CC ${cache.remote_version}${c.reset}`;
-        }
-        if (localVer) triggerAsyncUpdateCheck(localVer);
-      }
-    } else {
-      const localVer = getLocalClaudeVersion();
-      if (localVer) triggerAsyncUpdateCheck(localVer);
-    }
-  } catch (e) {}
-  return '';
-}
-
-// ── Fetch usage data (cached 5 min, cross-session dedup) ─
+// ── Usage data ───────────────────────────────────────────
+// Claude Code feeds fresh rate_limits on stdin every render (CC ≥ 2.1.80).
+// The cache file only covers the gap on a fresh boot, before the first turn,
+// when stdin carries no rate_limits yet.
 const USAGE_CACHE_FILE = path.join(CACHE_DIR, 'statusline-usage-cache.json');
-const USAGE_ATTEMPT_FILE = path.join(CACHE_DIR, 'statusline-usage-attempt');
 
 // Normalize stdin rate_limits (CC ≥2.1.80) into the shape formatUsageTier expects.
 // Stdin shape: { five_hour: { used_percentage, resets_at (epoch s) }, seven_day: {...} }
@@ -210,74 +149,12 @@ function normalizeStdinRateLimits(rl) {
   return out.five_hour || out.seven_day ? out : null;
 }
 
-function fetchUsageData() {
-  return new Promise(resolve => {
-    const cacheMaxAge = 600; // 10 minutes — prevents multi-session API spam
-
-    try {
-      const stat = fs.statSync(USAGE_CACHE_FILE);
-      const age = (Date.now() - stat.mtimeMs) / 1000;
-      if (age < cacheMaxAge) {
-        return resolve(readJsonFile(USAGE_CACHE_FILE));
-      }
-    } catch (e) {}
-
-    // Cross-session dedup: only one session attempts the API per 60s
-    try {
-      const attemptStat = fs.statSync(USAGE_ATTEMPT_FILE);
-      const attemptAge = (Date.now() - attemptStat.mtimeMs) / 1000;
-      if (attemptAge < 60) {
-        return resolve(readJsonFile(USAGE_CACHE_FILE));
-      }
-    } catch (e) {}
-
-    const token = getOAuthToken();
-    if (!token) return resolve(null);
-
-    // Touch attempt file so other sessions skip
-    writeJsonCache(USAGE_ATTEMPT_FILE, String(Date.now()));
-
-    const staleCache = readJsonFile(USAGE_CACHE_FILE);
-
-    const req = https.request({
-      hostname: 'api.anthropic.com',
-      path: '/api/oauth/usage',
-      method: 'GET',
-      timeout: 5000,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-        'anthropic-beta': 'oauth-2025-04-20',
-      },
-    }, res => {
-      let body = '';
-      res.on('data', chunk => body += chunk);
-      res.on('end', () => {
-        // Non-200: touch cache file to prevent immediate retry, but use shorter TTL
-        // so it recovers faster than the full 5-min window
-        if (res.statusCode !== 200) {
-          if (staleCache) {
-            // Re-write stale data to refresh mtime — retries in 5 min instead of immediately
-            writeJsonCache(USAGE_CACHE_FILE, JSON.stringify(staleCache));
-          }
-          return resolve(staleCache);
-        }
-
-        try {
-          const data = JSON.parse(body);
-          if (data.five_hour) {
-            writeJsonCache(USAGE_CACHE_FILE, body);
-            return resolve(data);
-          }
-        } catch (e) {}
-        resolve(staleCache);
-      });
-    });
-    req.on('error', () => resolve(staleCache));
-    req.on('timeout', () => { req.destroy(); });
-    req.end();
-  });
+// Write only when the numbers actually change, so a redraw is not a disk write.
+function writeUsageCache(usage) {
+  const payload = JSON.stringify(usage);
+  let prev = null;
+  try { prev = fs.readFileSync(USAGE_CACHE_FILE, 'utf8'); } catch (e) {}
+  if (prev !== payload) writeJsonCache(USAGE_CACHE_FILE, payload);
 }
 
 // ── Format usage segments ────────────────────────────────
@@ -297,7 +174,7 @@ let input = '';
 const stdinTimeout = setTimeout(() => process.exit(0), 3000);
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', chunk => input += chunk);
-process.stdin.on('end', async () => {
+process.stdin.on('end', () => {
   clearTimeout(stdinTimeout);
   try {
     const data = JSON.parse(input);
@@ -346,23 +223,22 @@ process.stdin.on('end', async () => {
     }
 
     // Prefer stdin rate_limits (CC ≥2.1.80) — fresh every render, zero API calls.
-    // Fall back to cached API data only when stdin lacks the field (fresh boot,
-    // pre-first-turn, or older CC versions).
+    // Fall back to the cache only when stdin lacks the field (fresh boot, before
+    // the first turn).
     const stdinUsage = normalizeStdinRateLimits(data.rate_limits);
-    const usagePromise = stdinUsage ? Promise.resolve(stdinUsage) : fetchUsageData();
-    const ccUpdate = getClaudeUpdateIndicator();
-    const usage = await usagePromise;
+    const usage = stdinUsage || readJsonFile(USAGE_CACHE_FILE);
 
-    // Opportunistically refresh the shared cache from fresh stdin data so other
-    // sessions (and next boot) get recent numbers without an API call.
+    // Refresh the shared cache from fresh stdin data so other sessions and the
+    // next boot start with recent numbers.
     if (stdinUsage) {
-      try { writeJsonCache(USAGE_CACHE_FILE, JSON.stringify(stdinUsage)); } catch (e) {}
+      try { writeUsageCache(stdinUsage); } catch (e) {}
     }
+
+    sweepStaleBridgeFiles();
 
     const sep = ` ${c.dim}|${c.reset} `;
 
     const line1 = [];
-    if (ccUpdate) line1.push(ccUpdate);
     line1.push(`${c.dim}${path.basename(dir)}${c.reset}`);
     line1.push(`${c.dim}${model}${c.reset}`);
 

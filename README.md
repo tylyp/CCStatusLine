@@ -24,14 +24,13 @@ ctx <bar> NN% (Nk)
 ## Features
 
 - **Context window** — used % with a colored bar and absolute token count `(Nk)`. Accounts for Claude Code's auto-compact buffer so 100% means actually full. Pulses a `💀` at 80%+.
-- **5-hour rate limit** — bar, percent, and reset time. Read live from Claude Code stdin (CC ≥ 2.1.80) with no extra API calls; falls back to a cached OAuth API call on older versions.
+- **5-hour rate limit** — bar, percent, and reset time. Read live from Claude Code stdin (CC ≥ 2.1.80) with no API calls.
 - **7-day rate limit** — same, with full reset date.
 - **1M context tag** — `(1M)` suffix when the active model is on the 1M context window.
-- **Claude Code update indicator** — `⬆ CC X.Y.Z` appears only when a newer version exists on npm. Hidden when up to date. Cached for 1 hour.
 - **9 bar styles** — classic, shade, dot, square, star, pipe, thin, braille, arrow
 - **5 bar sizes** — tiny (4), small (6), medium (10), large (15), xl (20)
 - **9 color themes** — default, ocean, sunset, mono, neon, frost, ember, candy, matrix
-- **Cross-session dedup** — multiple Claude Code windows share one usage cache; only one session hits the API per minute.
+- **Cross-session cache** — multiple Claude Code windows share one usage cache, so a freshly booted window shows real numbers before its first turn.
 - Zero external dependencies (Node.js only).
 
 ## Installation
@@ -90,7 +89,7 @@ Config file lookup order:
 ## Requirements
 
 - Node.js 16+
-- Claude Code CLI (used for update checks and, on older versions, OAuth token for rate-limit data)
+- Claude Code 2.1.80 or newer (rate-limit data arrives on stdin)
 
 ## License
 
